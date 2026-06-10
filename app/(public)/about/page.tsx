@@ -3,6 +3,8 @@ import { CheckCircle, Award, Users, Clock, Shield } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn about Build Demo — a decade of trusted construction craftsmanship across Greater Sydney.",

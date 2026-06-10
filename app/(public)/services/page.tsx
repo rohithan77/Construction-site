@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Services",
   description: "Comprehensive construction services including new homes, duplexes, renovations, granny flats and more.",

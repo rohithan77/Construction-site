@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,15 +11,14 @@ interface Props {
   params: { slug: string };
 }
 
-export async function generateStaticParams() {
-  const projects = await prisma.project.findMany({ select: { slug: true } });
-  return projects.map((p) => ({ slug: p.slug }));
-}
-
 export async function generateMetadata({ params }: Props) {
-  const project = await prisma.project.findUnique({ where: { slug: params.slug } });
-  if (!project) return {};
-  return { title: project.title, description: project.shortDescription };
+  try {
+    const project = await prisma.project.findUnique({ where: { slug: params.slug } });
+    if (!project) return {};
+    return { title: project.title, description: project.shortDescription };
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
