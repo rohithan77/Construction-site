@@ -1,9 +1,7 @@
 {
-  "buildCommand": "npx prisma generate && next build",
   "env": {
-    "DATABASE_URL": "file:./prisma/dev.db",
-    "NEXTAUTH_SECRET": "builddemo-preview-secret-2024",
-    "NEXTAUTH_URL": "https://your-project.vercel.app"
+    "DATABASE_URL": "file:./dev.db",
+    "NEXTAUTH_SECRET": "builddemo-preview-secret-2024"
   },
   "framework": "nextjs"
 }
