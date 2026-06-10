@@ -1,75 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import {
   Home, Building2, Hammer, LayoutGrid, Paintbrush, Building,
-  Wrench, Ruler, HardHat, Zap, ArrowRight
 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Service } from "@/types";
-import { parseFeatures } from "@/lib/utils";
+import { fadeUp, scaleIn, staggerContainer, viewportConfig } from "@/lib/animations";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iconMap: Record<string, React.ComponentType<any>> = {
-  home: Home,
-  building: Building2,
-  hammer: Hammer,
-  layout: LayoutGrid,
-  paintbrush: Paintbrush,
-  buildings: Building,
-  wrench: Wrench,
-  ruler: Ruler,
-  "hard-hat": HardHat,
-  zap: Zap,
+const ICONS: Record<string, React.ComponentType<any>> = {
+  Home, Building2, Hammer, LayoutGrid, Paintbrush, Building,
 };
 
-function ServiceCard({ service, index }: { service: Service; index: number }) {
-  const Icon = iconMap[service.icon ?? "home"] ?? Home;
-  const features = parseFeatures(service.features);
-
-  return (
-    <div
-      className="group relative bg-dark border border-white/5 hover:border-gold/30 rounded-sm p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-gold/10"
-      style={{ animationDelay: `${index * 100}ms` }}
-    >
-      {/* Icon */}
-      <div className="w-14 h-14 bg-gold/10 border border-gold/20 group-hover:bg-gold/20 group-hover:border-gold/40 rounded-sm flex items-center justify-center mb-6 transition-all duration-300">
-        <Icon size={24} className="text-gold" />
-      </div>
-
-      {/* Number */}
-      <div className="absolute top-6 right-6 text-white/5 font-display font-black text-5xl select-none">
-        {String(index + 1).padStart(2, "0")}
-      </div>
-
-      <h3 className="text-white font-display font-bold text-xl mb-3 group-hover:text-gold transition-colors duration-300">
-        {service.title}
-      </h3>
-
-      <p className="text-white/50 text-sm leading-relaxed mb-6 line-clamp-3">
-        {service.description}
-      </p>
-
-      {features.length > 0 && (
-        <ul className="space-y-2 mb-6">
-          {features.slice(0, 3).map((feature, i) => (
-            <li key={i} className="flex items-center gap-2 text-white/40 text-xs">
-              <div className="w-1 h-1 rounded-full bg-gold flex-shrink-0" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <Link
-        href={`/services#${service.slug}`}
-        className="inline-flex items-center gap-2 text-gold text-sm font-medium group/link"
-      >
-        Learn More
-        <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-      </Link>
-    </div>
-  );
-}
+const DEFAULT_ICON_NAMES = ["Home", "Building2", "Hammer", "LayoutGrid", "Paintbrush", "Building"];
 
 interface ServicesSectionProps {
   services: Service[];
@@ -77,38 +22,116 @@ interface ServicesSectionProps {
 
 export default function ServicesSection({ services }: ServicesSectionProps) {
   return (
-    <section className="bg-dark-card py-24" id="services">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-[#0A0A0B] py-28 lg:py-36 overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(201,168,76,0.04),transparent)]" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Section header */}
-        <div className="text-center mb-16">
-          <p className="text-gold text-xs font-medium tracking-widest uppercase mb-4">
-            What We Do
-          </p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-white mb-6">
-            Our Services
-          </h2>
-          <p className="text-white/50 max-w-xl mx-auto text-lg">
-            From new home builds to complete renovations — we deliver end-to-end construction solutions tailored to your vision.
-          </p>
-        </div>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={staggerContainer}
+          className="mb-20"
+        >
+          <motion.div variants={fadeUp} className="flex items-center gap-3 mb-5">
+            <span className="w-8 h-px bg-gold" />
+            <span className="text-gold text-[11px] font-semibold uppercase tracking-[0.35em]">What We Build</span>
+          </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, i) => (
-            <ServiceCard key={service.id} service={service} index={i} />
-          ))}
-        </div>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+            <motion.h2
+              variants={fadeUp}
+              className="font-display font-bold text-[clamp(2.5rem,4vw,3.5rem)] text-white leading-tight max-w-md"
+            >
+              Our Construction{" "}
+              <span className="text-gold italic">Services</span>
+            </motion.h2>
+            <motion.div variants={fadeUp}>
+              <Link
+                href="/services"
+                className="group inline-flex items-center gap-2 text-white/40 hover:text-gold text-sm font-medium transition-colors duration-300"
+              >
+                View all services
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
 
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 border border-gold/30 hover:border-gold text-gold font-semibold px-8 py-4 rounded-sm transition-all duration-300 hover:bg-gold/10"
-          >
-            View All Services
-            <ArrowRight size={16} />
-          </Link>
-        </div>
+        {/* Cards grid */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={staggerContainer}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.04]"
+        >
+          {services.map((service, i) => {
+            const iconName = DEFAULT_ICON_NAMES[i % DEFAULT_ICON_NAMES.length];
+            const Icon = ICONS[iconName] ?? Home;
+            const features = service.features
+              ? (typeof service.features === "string"
+                  ? (service.features as string).split(",").map((f) => f.trim())
+                  : (service.features as string[]))
+              : [];
+
+            return (
+              <motion.div
+                key={service.id}
+                variants={scaleIn}
+                className="group relative bg-[#0A0A0B] p-8 lg:p-10 overflow-hidden cursor-default hover:bg-[#111116] transition-colors duration-500"
+              >
+                {/* Hover glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gold/0 to-gold/0 group-hover:from-gold/5 group-hover:to-transparent transition-all duration-700" />
+
+                {/* Left border accent on hover */}
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gold/0 group-hover:bg-gold transition-all duration-500" />
+
+                <div className="relative z-10">
+                  {/* Icon */}
+                  <div className="mb-7">
+                    <div className="w-12 h-12 bg-gold/10 border border-gold/20 flex items-center justify-center group-hover:bg-gold/20 group-hover:border-gold/40 transition-all duration-300">
+                      <Icon size={20} className="text-gold" />
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="font-display font-bold text-xl text-white mb-3 group-hover:text-gold transition-colors duration-300">
+                    {service.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-white/40 text-sm leading-relaxed mb-6 line-clamp-3">
+                    {service.description}
+                  </p>
+
+                  {/* Features */}
+                  {features.slice(0, 3).length > 0 && (
+                    <ul className="space-y-2 mb-8">
+                      {features.slice(0, 3).map((f) => (
+                        <li key={f} className="flex items-center gap-2.5 text-white/30 text-[12px]">
+                          <span className="w-1 h-1 rounded-full bg-gold/60 flex-shrink-0" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {/* Link */}
+                  <Link
+                    href="/services"
+                    className="inline-flex items-center gap-1.5 text-gold text-xs font-semibold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"
+                  >
+                    Learn more <ArrowRight size={12} />
+                  </Link>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

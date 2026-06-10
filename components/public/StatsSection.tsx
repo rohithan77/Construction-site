@@ -1,93 +1,87 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-interface Stat {
-  value: string;
-  label: string;
-  description: string;
-}
+import { motion } from "framer-motion";
+import { fadeUp, staggerContainer, viewportConfig } from "@/lib/animations";
 
 interface StatsSectionProps {
-  stats?: {
-    years?: string;
-    projects?: string;
-    clients?: string;
-    team?: string;
-  };
+  stats?: { years?: string; projects?: string; clients?: string; team?: string };
 }
 
-function useCountUp(target: string, duration: number = 2000) {
-  const [count, setCount] = useState("0");
-  const [started, setStarted] = useState(false);
-
+function useCounter(target: number, duration = 2200, enabled = false) {
+  const [count, setCount] = useState(0);
   useEffect(() => {
-    if (!started) return;
-    const numericTarget = parseInt(target.replace(/\D/g, ""), 10);
-    const suffix = target.replace(/[\d]/g, "").trim();
-    if (isNaN(numericTarget)) { setCount(target); return; }
-
-    const start = Date.now();
+    if (!enabled) return;
+    let current = 0;
+    const step = target / (duration / 16);
     const timer = setInterval(() => {
-      const elapsed = Date.now() - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(eased * numericTarget);
-      setCount(`${current}${suffix}`);
-      if (progress >= 1) { setCount(target); clearInterval(timer); }
+      current += step;
+      if (current >= target) { setCount(target); clearInterval(timer); }
+      else setCount(Math.floor(current));
     }, 16);
-
     return () => clearInterval(timer);
-  }, [started, target, duration]);
-
-  return { count, start: () => setStarted(true) };
+  }, [target, duration, enabled]);
+  return count;
 }
 
-function StatItem({ value, label, description }: Stat) {
+function StatCard({ num, suffix, label, index }: { num: number; suffix: string; label: string; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
-  const { count, start } = useCountUp(value);
+  const [inView, setInView] = useState(false);
+  const count = useCounter(num, 2200, inView);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { start(); observer.disconnect(); } },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [start]);
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.4 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
 
   return (
-    <div ref={ref} className="text-center group">
-      <div className="text-5xl sm:text-6xl font-display font-bold text-gold mb-2 group-hover:scale-105 transition-transform duration-300">
-        {count}
+    <motion.div
+      ref={ref}
+      variants={fadeUp}
+      className="group relative flex flex-col items-center py-14 px-6 text-center cursor-default"
+    >
+      <div className="flex items-end gap-1 mb-3">
+        <span className="font-display font-black text-[clamp(3.5rem,5.5vw,5rem)] leading-none text-white group-hover:text-gold transition-colors duration-500">
+          {inView ? count.toLocaleString() : "0"}
+        </span>
+        <span className="font-display font-black text-3xl text-gold mb-2 leading-none">{suffix}</span>
       </div>
-      <div className="text-white font-semibold text-lg mb-1">{label}</div>
-      <div className="text-white/40 text-sm">{description}</div>
-    </div>
+      <span className="text-white/35 text-[11px] uppercase tracking-[0.28em] font-medium">{label}</span>
+      <div className="mt-5 h-[2px] w-6 bg-gold/0 group-hover:w-12 group-hover:bg-gold/50 transition-all duration-500 ease-out" />
+    </motion.div>
   );
 }
 
 export default function StatsSection({ stats }: StatsSectionProps) {
-  const statItems: Stat[] = [
-    { value: stats?.years ?? "10+", label: "Years Experience", description: "Trusted craftsmanship since 2014" },
-    { value: stats?.projects ?? "250+", label: "Projects Completed", description: "Across Greater Sydney" },
-    { value: stats?.clients ?? "200+", label: "Happy Clients", description: "Families & investors served" },
-    { value: stats?.team ?? "50+", label: "Team Members", description: "Skilled professionals" },
+  const items = [
+    { num: parseInt(stats?.years ?? "25"), suffix: "+", label: "Years of Experience" },
+    { num: parseInt(stats?.projects ?? "500"), suffix: "+", label: "Projects Completed" },
+    { num: parseInt(stats?.clients ?? "98"), suffix: "%", label: "Client Satisfaction" },
+    { num: parseInt(stats?.team ?? "50"), suffix: "+", label: "Expert Team Members" },
   ];
 
   return (
-    <section className="bg-dark-lighter py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-          {statItems.map((stat, i) => (
-            <div key={i} className="relative">
-              <StatItem {...stat} />
-              {i < statItems.length - 1 && (
-                <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-px h-16 bg-gold/20" />
-              )}
-            </div>
+    <section className="relative bg-[#0D0D10] border-y border-white/[0.04] overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.018]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #C9A84C 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportConfig}
+          variants={staggerContainer}
+          className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-white/[0.05]"
+        >
+          {items.map((item, i) => (
+            <StatCard key={item.label} {...item} index={i} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
