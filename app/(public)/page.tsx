@@ -5,7 +5,7 @@ import HeroSection from "@/components/public/HeroSection";
 import MarqueeSection from "@/components/public/MarqueeSection";
 import StatsSection from "@/components/public/StatsSection";
 import ServicesSection from "@/components/public/ServicesSection";
-import ProcessSection from "@/components/public/ProcessSection";
+import ScrollStorySection from "@/components/public/ScrollStorySection";
 import ProjectsSection from "@/components/public/ProjectsSection";
 import AboutSection from "@/components/public/AboutSection";
 import TestimonialsSection from "@/components/public/TestimonialsSection";
@@ -56,8 +56,8 @@ export default async function HomePage() {
       {/* 4. Services grid */}
       <ServicesSection services={services} />
 
-      {/* 5. The build journey — storytelling scroll section */}
-      <ProcessSection />
+      {/* 5. The build journey — scroll-pinned story narrative */}
+      <ScrollStorySection />
 
       {/* 6. Featured projects */}
       <ProjectsSection projects={projects} />
