@@ -35,9 +35,9 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-*.db
 *.db-journal
 prisma/migrations/
+# Note: dev.db is committed for Vercel demo deployment
 
 # uploads
 /public/uploads/*
