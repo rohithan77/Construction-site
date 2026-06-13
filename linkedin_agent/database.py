@@ -8,13 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from linkedin_agent.config import settings
 from linkedin_agent.models import Base
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=False,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-)
+_is_sqlite = settings.database_url.startswith("sqlite")
+
+_engine_kwargs: dict = {"echo": False, "pool_pre_ping": True}
+if not _is_sqlite:
+    _engine_kwargs["pool_size"] = 5
+    _engine_kwargs["max_overflow"] = 10
+
+engine = create_async_engine(settings.database_url, **_engine_kwargs)
 
 AsyncSessionLocal: async_sessionmaker[AsyncSession] = async_sessionmaker(
     bind=engine,
