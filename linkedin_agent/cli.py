@@ -6,6 +6,9 @@ Usage:
   python -m linkedin_agent.cli run        — start the agent (runs continuously)
   python -m linkedin_agent.cli inbox      — run inbox audit now
   python -m linkedin_agent.cli jobs       — scan for jobs now
+  python -m linkedin_agent.cli posts      — scan connections' posts, draft comments
+  python -m linkedin_agent.cli prospects  — find new people to connect with
+  python -m linkedin_agent.cli profile    — run profile gap analysis
   python -m linkedin_agent.cli once       — run one full pipeline cycle
   python -m linkedin_agent.cli restyle    — re-analyse your writing style
 """
@@ -25,6 +28,12 @@ def main() -> None:
         asyncio.run(_inbox())
     elif cmd == "jobs":
         asyncio.run(_jobs())
+    elif cmd == "posts":
+        asyncio.run(_posts())
+    elif cmd == "prospects":
+        asyncio.run(_prospects())
+    elif cmd == "profile":
+        asyncio.run(_profile())
     elif cmd == "once":
         asyncio.run(_once())
     elif cmd == "restyle":
@@ -221,6 +230,10 @@ async def _setup() -> None:
     locations = Prompt.ask(
         "  Preferred locations (comma-separated, or 'Remote')", default="Remote"
     )
+    countries = Prompt.ask(
+        "  Target countries for outreach (comma-separated)",
+        default="Australia",
+    )
 
     # ── 3. Documents ──────────────────────────────────────────────────────────
     console.print("\n[bold]Step 2 of 4 — Documents[/bold]")
@@ -268,6 +281,7 @@ async def _setup() -> None:
         user.mode = "job_seeker"
         user.target_roles = [r.strip() for r in roles.split(",")]
         user.target_locations = [loc.strip() for loc in locations.split(",")]
+        user.target_countries = [c.strip() for c in countries.split(",")]
         user.target_industries = []
         user.resume_text = resume_text or None
         await session.commit()
@@ -332,6 +346,7 @@ async def _setup() -> None:
     console.print("\n[bold green]✓ Setup complete![/bold green]\n")
     console.print("What was collected:")
     console.print(f"  • Target roles: {roles}")
+    console.print(f"  • Target countries: {countries}")
     console.print(f"  • Resume: {'loaded' if resume_text else 'not provided'}")
     console.print(f"  • Extra writing samples: {len(extra_corpus)}")
     console.print(f"  • LinkedIn posts: {len(linkedin_corpus) if cookies_path.exists() else 'pending (add cookies first)'}")
@@ -424,6 +439,24 @@ async def _run() -> None:
         from linkedin_agent.scheduler.jobs import stop_scheduler
         stop_scheduler()
         console.print("\n[yellow]Agent stopped.[/yellow]")
+
+
+async def _posts() -> None:
+    from linkedin_agent.agents.orchestrator import Orchestrator
+    await Orchestrator().run_post_scan_only()
+    print("Post scan complete — comment drafts sent to Telegram.")
+
+
+async def _prospects() -> None:
+    from linkedin_agent.agents.orchestrator import Orchestrator
+    await Orchestrator().run_prospect_scan_only()
+    print("Prospect research complete — connection batch sent to Telegram.")
+
+
+async def _profile() -> None:
+    from linkedin_agent.agents.orchestrator import Orchestrator
+    await Orchestrator().run_profile_analysis_only()
+    print("Profile gap analysis complete — suggestions sent to Telegram.")
 
 
 async def _inbox() -> None:

@@ -115,6 +115,18 @@ class TelegramNotifier:
         lines.append("\nReply /approve_all or /skip_all, or /approve_<n> for individual.")
         await self.send("\n".join(lines))
 
+    async def send_connection_batch_formatted(self, message: str) -> None:
+        if message:
+            await self.send(message)
+
+    async def send_comment_queue(self, message: str) -> None:
+        if message:
+            await self.send(message)
+
+    async def send_profile_suggestions(self, message: str) -> None:
+        if message:
+            await self.send(message)
+
     async def send_alert(self, message: str) -> None:
         """Send an urgent alert (negative reply, rate limit hit, etc.)"""
         await self.send(f"⚠️ *Alert*\n\n{message}")

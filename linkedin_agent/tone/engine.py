@@ -9,9 +9,11 @@ import structlog
 from linkedin_agent.config import settings
 from linkedin_agent.tone.prompts import (
     AUTHENTICITY_CHECK_PROMPT,
+    COMMENT_DRAFT_PROMPT,
     INBOX_CLASSIFICATION_PROMPT,
     JOB_FIT_PROMPT,
     MESSAGE_DRAFT_PROMPT,
+    PROFILE_GAP_PROMPT,
     REVIVAL_MESSAGE_PROMPT,
     STYLE_EXTRACTION_PROMPT,
 )
@@ -165,6 +167,58 @@ class ToneEngine:
         except Exception as e:
             log.error("revival_draft_failed", error=str(e))
             return ""
+
+    def draft_comment(
+        self,
+        post_text: str,
+        post_author: str,
+        style_profile: dict,
+        commenter_name: str,
+        commenter_context: str,
+    ) -> str:
+        """Draft an authentic LinkedIn comment. Returns empty string if nothing genuine to add."""
+        prompt = COMMENT_DRAFT_PROMPT.format(
+            style_profile=json.dumps(style_profile, indent=2),
+            post_text=post_text[:1500],
+            post_author=post_author,
+            commenter_name=commenter_name,
+            commenter_context=commenter_context,
+        )
+        try:
+            raw = self._call_claude(prompt, model=settings.primary_model, max_tokens=300)
+            if "SKIP" in raw[:20]:
+                return ""
+            raw = raw.strip().strip('"').strip("'")
+            return self._authenticity_check(raw, style_profile) if raw else ""
+        except Exception as e:
+            log.error("comment_draft_failed", error=str(e))
+            return ""
+
+    def analyse_profile_gaps(
+        self,
+        profile_text: str,
+        job_descriptions: list[str],
+        target_roles: list[str],
+        target_market: str = "Australia",
+    ) -> list[dict]:
+        """Compare LinkedIn profile against job descriptions, return prioritised gap list."""
+        if not profile_text or not job_descriptions:
+            return []
+        jd_sample = "\n\n---\n\n".join(job_descriptions[:5])
+        prompt = PROFILE_GAP_PROMPT.format(
+            profile_text=profile_text[:3000],
+            target_roles=", ".join(target_roles),
+            target_market=target_market,
+            job_descriptions=jd_sample[:4000],
+        )
+        try:
+            raw = self._call_claude(prompt, max_tokens=1200)
+            raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            gaps = json.loads(raw)
+            return gaps if isinstance(gaps, list) else []
+        except Exception as e:
+            log.error("profile_gap_analysis_failed", error=str(e))
+            return []
 
     def score_job_fit(self, job_title: str, company: str, description: str, user) -> tuple[float, str]:
         """Score how well a job matches the user. Returns (fit_score, explanation)."""

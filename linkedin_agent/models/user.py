@@ -26,6 +26,7 @@ class User(TimestampMixin, Base):
     target_roles: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     target_industries: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     target_locations: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
+    target_countries: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     resume_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     knowledge_base: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     notification_channel: Mapped[str] = mapped_column(

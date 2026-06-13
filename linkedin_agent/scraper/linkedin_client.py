@@ -118,6 +118,65 @@ class LinkedInClient:
             log.error("search_people_failed", keywords=keywords, error=str(e))
             return []
 
+    async def search_people_geo(
+        self,
+        keywords: str,
+        regions: list[str] | None = None,
+        network_depths: list[str] | None = None,
+        limit: int = 10,
+    ) -> list[dict]:
+        """Search people with optional geo region and network depth filters."""
+        try:
+            api = self._get_api()
+            kwargs: dict = {"keywords": keywords, "limit": limit}
+            if regions:
+                kwargs["regions"] = regions
+            if network_depths:
+                kwargs["network_depths"] = network_depths
+            raw = await self._run(api.search_people, **kwargs)
+            return [self._normalize_search_result(r) for r in (raw or [])]
+        except Exception as e:
+            log.error("search_people_geo_failed", keywords=keywords, error=str(e))
+            return []
+
+    async def get_connection_posts(self, profile_id: str, limit: int = 5) -> list[dict]:
+        """Return recent posts by a connection, normalized for comment drafting."""
+        try:
+            api = self._get_api()
+            raw = await self._run(api.get_profile_posts, profile_id, post_count=limit)
+            posts = []
+            for p in (raw or []):
+                try:
+                    update = p.get("value", {}).get(
+                        "com.linkedin.voyager.feed.render.UpdateV2", {}
+                    )
+                    text = (
+                        update.get("commentary", {})
+                        .get("text", {})
+                        .get("text", "")
+                    )
+                    if not text:
+                        continue
+                    urn = p.get("entityUrn", "") or p.get("updateUrn", "")
+                    social = update.get("socialDetail", {}).get("totalSocialActivityCounts", {})
+                    likes = social.get("numLikes", 0)
+                    comments = social.get("numComments", 0)
+                    created_ms = p.get("value", {}).get("created", {}).get("time", 0)
+                    posts.append({
+                        "urn": urn,
+                        "profile_id": profile_id,
+                        "text": text,
+                        "likes": likes,
+                        "comments": comments,
+                        "created_at_ms": created_ms,
+                    })
+                except Exception:
+                    continue
+            return posts
+        except Exception as e:
+            log.error("get_connection_posts_failed", profile_id=profile_id, error=str(e))
+            return []
+
     async def get_own_posts(self, limit: int = 50) -> list[str]:
         """Return list of post text strings for tone analysis."""
         try:

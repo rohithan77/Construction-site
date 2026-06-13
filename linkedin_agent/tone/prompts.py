@@ -100,6 +100,54 @@ Write a natural, warm revival message. It should:
 
 Max 3 sentences."""
 
+COMMENT_DRAFT_PROMPT = """You are ghostwriting a LinkedIn comment for someone. Write EXACTLY in their voice.
+
+THEIR WRITING STYLE:
+{style_profile}
+
+POST BY {post_author}:
+{post_text}
+
+CONTEXT: The commenter ({commenter_name}) works in {commenter_context}.
+
+STRICT RULES:
+- Never say "Great post!", "Insightful!", "Love this!", "So true!", or any hollow opener
+- Never start with the author's name
+- Add real value — a specific observation, a related experience, a concrete question, or a data point
+- Keep it under 3 sentences
+- Match the commenter's exact formality and sentence rhythm
+- Sound like something you'd text to a smart colleague, not a LinkedIn bot
+- If you have nothing genuinely useful to add, output: SKIP
+
+Write ONE comment only. No labels, no explanation."""
+
+PROFILE_GAP_PROMPT = """You are a career coach analysing a LinkedIn profile against target job requirements.
+
+CURRENT PROFILE:
+{profile_text}
+
+TARGET ROLES: {target_roles}
+TARGET MARKET: {target_market}
+
+SAMPLE JOB DESCRIPTIONS:
+{job_descriptions}
+
+Identify the top gaps between the profile and what employers in these roles are looking for.
+Focus on:
+1. Missing keywords and skills that appear repeatedly in job descriptions
+2. Sections that are weak or absent (certifications, tools, methodologies)
+3. Any phrasing that could be stronger or more specific
+
+Respond as a JSON array of up to 6 gap items:
+[
+  {{
+    "section": "<Profile section: Headline | Summary | Experience | Skills | Certifications>",
+    "gap": "One sentence describing what is missing or weak",
+    "suggestion": "Specific suggested text or addition (keep it authentic — written for this person, not generic)",
+    "priority": "<high|medium|low>"
+  }}
+]"""
+
 JOB_FIT_PROMPT = """Assess how well this job matches the candidate's profile.
 
 JOB:
