@@ -8,6 +8,7 @@ import structlog
 from sqlalchemy import select
 
 from linkedin_agent.agents.inbox_audit import InboxAuditAgent
+from linkedin_agent.approval import telegram_handler as _tg_state
 from linkedin_agent.agents.monitor_agent import MonitorAgent
 from linkedin_agent.agents.post_monitor import PostMonitorAgent
 from linkedin_agent.agents.profile_optimizer import ProfileOptimizerAgent
@@ -84,6 +85,7 @@ class Orchestrator:
                     if comment_drafts:
                         msg = self._post_monitor.format_comment_queue(comment_drafts)
                         await self._telegram.send_comment_queue(msg)
+                        _tg_state.set_comment_queue(comment_drafts)
                         run.actions_taken += len(comment_drafts)
                     _human_delay(10, 25)
 
@@ -97,6 +99,7 @@ class Orchestrator:
                     if prospects:
                         batch = self._prospect.format_connection_batch(prospects)
                         await self._telegram.send_connection_batch_formatted(batch)
+                        _tg_state.set_connection_batch(prospects)
                         run.connections_queued = len(prospects)
                     _human_delay(10, 25)
 
@@ -178,6 +181,7 @@ class Orchestrator:
                 await self._telegram.send_connection_batch_formatted(
                     self._prospect.format_connection_batch(prospects)
                 )
+                _tg_state.set_connection_batch(prospects)
 
     async def run_post_scan_only(self) -> None:
         async with async_session() as session:
@@ -189,6 +193,7 @@ class Orchestrator:
                 await self._telegram.send_comment_queue(
                     self._post_monitor.format_comment_queue(drafts)
                 )
+                _tg_state.set_comment_queue(drafts)
 
     async def run_profile_analysis_only(self) -> None:
         async with async_session() as session:

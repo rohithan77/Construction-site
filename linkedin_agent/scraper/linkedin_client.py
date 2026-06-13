@@ -222,6 +222,29 @@ class LinkedInClient:
             log.error("send_message_failed", error=str(e))
             return False
 
+    async def post_comment(self, post_urn: str, text: str) -> bool:
+        try:
+            api = self._get_api()
+            if hasattr(api, "comment"):
+                await self._run(api.comment, post_urn, text)
+            elif hasattr(api, "_post"):
+                # Fallback: direct Voyager API call
+                member_id = getattr(getattr(api, "client", None), "metadata", {}).get("memberId", "")
+                data = {
+                    "actor": f"urn:li:member:{member_id}",
+                    "object": post_urn,
+                    "message": {"text": text},
+                }
+                await self._run(api._post, "/feed/comments", data=data)
+            else:
+                log.warning("post_comment_not_supported_by_library", urn=post_urn)
+                return False
+            log.info("comment_posted", urn=post_urn)
+            return True
+        except Exception as e:
+            log.error("post_comment_failed", urn=post_urn, error=str(e))
+            return False
+
     async def get_mutual_connections(self, profile_id: str) -> list[dict]:
         try:
             api = self._get_api()

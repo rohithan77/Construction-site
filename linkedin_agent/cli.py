@@ -420,6 +420,7 @@ async def _run() -> None:
     from rich.console import Console
     from linkedin_agent.agents.orchestrator import Orchestrator
     from linkedin_agent.scheduler.jobs import start_scheduler
+    from linkedin_agent.approval.telegram_handler import start_bot
 
     console = Console()
     console.print("[bold cyan]LinkedIn Agent — Starting[/bold cyan]")
@@ -430,7 +431,9 @@ async def _run() -> None:
     await orch.run_pipeline(run_type="manual")
 
     start_scheduler(orch.run_pipeline)
-    console.print("[green]Agent running. Press Ctrl+C to stop.[/green]")
+
+    bot_task = asyncio.create_task(start_bot())
+    console.print("[green]Agent running. Telegram bot active. Press Ctrl+C to stop.[/green]")
 
     try:
         while True:
@@ -438,6 +441,11 @@ async def _run() -> None:
     except KeyboardInterrupt:
         from linkedin_agent.scheduler.jobs import stop_scheduler
         stop_scheduler()
+        bot_task.cancel()
+        try:
+            await bot_task
+        except asyncio.CancelledError:
+            pass
         console.print("\n[yellow]Agent stopped.[/yellow]")
 
 
