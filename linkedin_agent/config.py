@@ -50,8 +50,14 @@ class Settings(BaseSettings):
     max_searches_per_day: int = Field(default=15, ge=1, le=25)
     active_hours_start: int = Field(default=7, ge=5, le=10)
     active_hours_end: int = Field(default=21, ge=18, le=23)
-    schedule_min_interval_hours: float = 2.5
-    schedule_max_interval_hours: float = 4.5
+
+    # Two-window daily schedule (all times in UTC hours)
+    # Morning window: pick a random time between these two hours each day
+    morning_window_start: int = Field(default=7, ge=5, le=12)
+    morning_window_end: int = Field(default=11, ge=6, le=13)
+    # Evening window: pick a random time between these two hours each day
+    evening_window_start: int = Field(default=16, ge=13, le=20)
+    evening_window_end: int = Field(default=20, ge=14, le=22)
 
     # Encryption
     encryption_key: str
