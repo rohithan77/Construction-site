@@ -78,6 +78,7 @@ dependencies = [
     "structlog>=24.2.0",     # structured logging
     "cryptography>=42.0.8",  # cookie/credential encryption
     "rich>=13.7.1",          # CLI output
+    "pdfplumber>=0.11.0",    # resume PDF parsing in setup
 ]
 
 [project.optional-dependencies]
