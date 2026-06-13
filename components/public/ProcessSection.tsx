@@ -1,173 +1,241 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ClipboardList, PenTool, HardHat, KeyRound } from "lucide-react";
-import { fadeUp, staggerContainer, viewportConfig } from "@/lib/animations";
+import { useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 
-const STEPS = [
+const STAGES = [
   {
-    num: "01",
-    icon: ClipboardList,
-    title: "Discovery & Vision",
-    sub: "We listen first.",
-    body: "Every great home starts with a conversation. We take time to understand your lifestyle, budget and goals — then align them with what's possible. No pressure, no jargon.",
-    accent: "from-gold/20 to-transparent",
+    number: "01",
+    tag: "Consult",
+    headline: ["We listen before", "we measure."],
+    body: "Before we draw a line or quote a figure, we sit with you — really sit. We want to understand your household's rhythms, your budget's actual ceiling, and what 'home' means to your specific family. Consultations run long because the questions that matter rarely surface in the first fifteen minutes.",
+    detail: "Unlike most builders, we don't start with a fixed catalogue. We start with you.",
   },
   {
-    num: "02",
-    icon: PenTool,
-    title: "Design & Approval",
-    sub: "Your vision, drawn to life.",
-    body: "Our in-house design team creates plans that balance aesthetics with practicality and council compliance. We handle all permits and approvals so you don't have to.",
-    accent: "from-blue-500/10 to-transparent",
+    number: "02",
+    tag: "Design",
+    headline: ["Plans that anticipate", "what others miss."],
+    body: "Our in-house designers balance what you want with what council permits and what the block allows. You'll review 3D walkthroughs of every room before a single permit is lodged. We design for how rooms are used at 7am on a Tuesday, not just for how they photograph.",
+    detail: "Full architectural drawings, council submissions and engineering — all in-house.",
   },
   {
-    num: "03",
-    icon: HardHat,
-    title: "Build & Construct",
-    sub: "Craftsmanship at every step.",
-    body: "Licensed builders and trusted tradespeople work to a structured program with regular site inspections and progress updates. You're never left wondering what's happening.",
-    accent: "from-emerald-500/10 to-transparent",
+    number: "03",
+    tag: "Build",
+    headline: ["Every trade on this site", "answers to us."],
+    body: "We don't broker your build to the lowest bidder and hope for the best. Our licensed builders, structural engineers and long-term subcontractors execute to a precise program. You get site access any day, a direct line to your project manager, and a written update every Friday.",
+    detail: "Fixed-price contracts. What we quote is what you pay — unless you change the scope.",
   },
   {
-    num: "04",
-    icon: KeyRound,
-    title: "Handover & Beyond",
-    sub: "The beginning of your story.",
-    body: "We walk you through your completed home, hand over a defect-free build with full documentation, and remain your point of contact for years post-handover.",
-    accent: "from-gold/15 to-transparent",
+    number: "04",
+    tag: "Handover",
+    headline: ["The house is complete.", "The relationship isn't."],
+    body: "We walk every room with you before you take the keys. Every defect is documented and resolved. You leave with full warranty documentation, a detailed home manual and a direct contact for anything that comes up in the next five years.",
+    detail: "5-year structural warranty. Post-handover support that actually picks up.",
   },
 ];
 
-function Step({ step, index }: { step: (typeof STEPS)[0]; index: number }) {
-  const isRight = index % 2 !== 0;
-  const Icon = step.icon;
-
+function StageContent({ s, i }: { s: (typeof STAGES)[0]; i: number }) {
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[280px] ${isRight ? "" : ""}`}>
-      {/* Number side */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportConfig}
-        variants={isRight ? { hidden: { opacity: 0, x: 60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } } } : { hidden: { opacity: 0, x: -60 }, visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } } }}
-        className={`relative flex items-center justify-center p-12 lg:p-16 bg-gradient-to-br ${step.accent} bg-[#0D0D10] border border-white/[0.04] overflow-hidden ${isRight ? "lg:order-2" : ""}`}
+    <motion.div
+      key={`stage-${i}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="absolute inset-0 flex flex-col justify-center px-8 sm:px-14 lg:px-20 pt-20 pb-28 max-w-3xl"
+    >
+      {/* Watermark number */}
+      <div
+        className="absolute left-0 top-1/2 -translate-y-1/2 font-display font-black leading-none select-none pointer-events-none"
+        style={{
+          fontSize: "clamp(160px, 22vw, 320px)",
+          color: "rgba(181,105,74,0.05)",
+          letterSpacing: "-0.06em",
+        }}
       >
-        {/* Giant number watermark */}
-        <span
-          className="absolute font-display font-black text-[12rem] leading-none select-none pointer-events-none"
-          style={{ color: "rgba(201,168,76,0.04)" }}
-        >
-          {step.num}
-        </span>
+        {s.number}
+      </div>
 
-        <div className="relative z-10 text-center">
-          <div className="w-16 h-16 bg-gold/10 border border-gold/25 flex items-center justify-center mx-auto mb-5">
-            <Icon size={26} className="text-gold" />
-          </div>
-          <div className="font-display font-black text-7xl text-white/8 leading-none">{step.num}</div>
-        </div>
+      {/* Tag */}
+      <motion.div
+        initial={{ opacity: 0, x: -18 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center gap-3 mb-8 relative z-10"
+      >
+        <span className="w-7 h-px bg-accent-primary" />
+        <span className="text-accent-primary text-[11px] font-bold uppercase tracking-[0.42em]">{s.tag}</span>
+        <span className="text-text/20 text-[11px] ml-1">— Stage {s.number}</span>
       </motion.div>
 
-      {/* Content side */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportConfig}
-        variants={staggerContainer}
-        className={`flex flex-col justify-center p-12 lg:p-16 border border-white/[0.04] bg-[#0A0A0B] ${isRight ? "lg:order-1" : ""}`}
+      {/* Headline */}
+      <div className="relative z-10 mb-8">
+        {s.headline.map((line, li) => (
+          <motion.div
+            key={`${line}-${li}`}
+            initial={{ opacity: 0, y: 45, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.85, delay: 0.12 + li * 0.13, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display font-black text-text leading-[0.92] tracking-[-0.04em]"
+            style={{ fontSize: "clamp(2.6rem,5.5vw,5rem)" }}
+          >
+            {line}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Body */}
+      <motion.p
+        initial={{ opacity: 0, y: 22, filter: "blur(5px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 text-text/50 text-[1.02rem] leading-[1.88] max-w-md mb-7"
       >
-        <motion.span
-          variants={fadeUp}
-          className="text-gold text-[11px] font-bold uppercase tracking-[0.35em] mb-3"
-        >
-          Step {step.num}
-        </motion.span>
-        <motion.h3
-          variants={fadeUp}
-          className="font-display font-bold text-[clamp(1.8rem,3vw,2.5rem)] text-white leading-tight mb-2"
-        >
-          {step.title}
-        </motion.h3>
-        <motion.p
-          variants={fadeUp}
-          className="text-gold/60 text-sm font-medium italic mb-5"
-        >
-          {step.sub}
-        </motion.p>
-        <motion.p variants={fadeUp} className="text-white/40 text-base leading-[1.9] max-w-sm">
-          {step.body}
-        </motion.p>
+        {s.body}
+      </motion.p>
+
+      {/* Differentiator */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 flex items-start gap-3 max-w-md"
+      >
+        <div className="w-[3px] self-stretch min-h-[36px] bg-accent-primary flex-shrink-0" />
+        <p className="text-accent-primary/65 text-sm leading-relaxed italic">{s.detail}</p>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
 
 export default function ProcessSection() {
-  const lineRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+
   const { scrollYProgress } = useScroll({
-    target: lineRef,
-    offset: ["start 70%", "end 30%"],
+    target: outerRef,
+    offset: ["start start", "end end"],
   });
-  const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const idx = Math.min(Math.floor(v * STAGES.length), STAGES.length - 1);
+    if (idx !== active) setActive(idx);
+  });
 
   return (
-    <section className="relative bg-[#0A0A0B] py-28 lg:py-36 overflow-hidden">
-      {/* Top + bottom rules */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+    <div ref={outerRef} style={{ height: `${STAGES.length * 100}vh` }} className="relative">
+      <div className="sticky top-0 h-screen overflow-hidden bg-bg">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Subtle right panel */}
+        <div className="absolute right-0 top-0 bottom-0 w-[28%] bg-surface/40" />
 
-        {/* ── Section header ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
-          className="text-center mb-20"
-        >
-          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 mb-6">
-            <span className="w-8 h-px bg-gold" />
-            <span className="text-gold text-[11px] font-semibold uppercase tracking-[0.38em]">
+        {/* Top label */}
+        <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-8 sm:px-14 lg:px-20 pt-10">
+          <div className="flex items-center gap-3">
+            <span className="w-5 h-px bg-text/18" />
+            <span className="text-text/28 text-[10px] font-semibold uppercase tracking-[0.42em]">
               The Build Journey
             </span>
-            <span className="w-8 h-px bg-gold" />
-          </motion.div>
-          <motion.h2
-            variants={fadeUp}
-            className="font-display font-bold text-[clamp(2.5rem,5vw,4rem)] text-white leading-tight"
-          >
-            From Vision to{" "}
-            <span className="text-gold italic">Keys in Hand</span>
-          </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            className="text-white/35 text-lg mt-5 max-w-xl mx-auto leading-relaxed"
-          >
-            A transparent, step-by-step process so you always know exactly where your home is at.
-          </motion.p>
-        </motion.div>
-
-        {/* ── Steps grid with animated connecting line ── */}
-        <div ref={lineRef} className="relative">
-
-          {/* Animated vertical connector (desktop only) */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px hidden lg:block overflow-hidden">
-            <motion.div
-              style={{ scaleY: lineScaleY }}
-              className="w-full h-full bg-gradient-to-b from-gold/60 via-gold/30 to-transparent origin-top"
-            />
           </div>
-
-          {/* Steps */}
-          <div className="grid grid-cols-1 gap-px">
-            {STEPS.map((step, i) => (
-              <Step key={step.num} step={step} index={i} />
-            ))}
+          <div className="font-mono text-sm tracking-widest">
+            <span className="text-accent-primary font-display font-black text-xl">
+              {String(active + 1).padStart(2, "0")}
+            </span>
+            <span className="text-text/15"> / 04</span>
           </div>
         </div>
+
+        {/* Stage content */}
+        <div className="relative z-10 h-full">
+          <AnimatePresence mode="wait">
+            <StageContent key={active} s={STAGES[active]} i={active} />
+          </AnimatePresence>
+        </div>
+
+        {/* Right sidebar nav */}
+        <div className="absolute right-10 lg:right-16 top-1/2 -translate-y-1/2 z-20 hidden lg:flex flex-col gap-7">
+          {STAGES.map((s, i) => (
+            <motion.div
+              key={s.number}
+              animate={{ opacity: i === active ? 1 : 0.2 }}
+              transition={{ duration: 0.35 }}
+              className="flex items-center gap-3"
+            >
+              <motion.div
+                animate={{
+                  height: i === active ? 42 : 14,
+                  backgroundColor: i <= active ? "var(--color-accent-primary)" : "rgba(28,27,25,0.12)",
+                }}
+                transition={{ duration: 0.35 }}
+                className="w-[2px] rounded-full"
+              />
+              <div>
+                <div className="text-text/25 text-[9px] uppercase tracking-[0.3em]">{s.number}</div>
+                <div className={`text-[11px] font-medium transition-colors duration-300 ${i === active ? "text-text" : "text-text/22"}`}>
+                  {s.tag}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom progress */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 px-8 sm:px-14 lg:px-20 pb-8">
+          <div className="flex items-center gap-2 mb-4">
+            {STAGES.map((s, i) => (
+              <div key={s.number} className="flex items-center gap-2">
+                <motion.div
+                  animate={{
+                    width: i === active ? 28 : i < active ? 14 : 8,
+                    backgroundColor:
+                      i === active ? "var(--color-accent-primary)" : i < active ? "rgba(181,105,74,0.38)" : "rgba(28,27,25,0.12)",
+                  }}
+                  transition={{ duration: 0.35 }}
+                  className="h-[2px] rounded-full"
+                />
+                {i === active && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-accent-primary/60 text-[10px] uppercase tracking-[0.3em]"
+                  >
+                    {s.tag}
+                  </motion.span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="w-full h-px bg-text/[0.06] relative overflow-hidden">
+            <motion.div
+              animate={{ width: `${((active + 0.5) / STAGES.length) * 100}%` }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-0 left-0 h-full bg-accent-primary"
+            />
+          </div>
+          <AnimatePresence>
+            {active === 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="mt-4 flex items-center gap-2 text-text/22"
+              >
+                <div className="flex gap-0.5">
+                  {[0, 1, 2].map((n) => (
+                    <motion.div
+                      key={n}
+                      animate={{ opacity: [0.2, 1, 0.2] }}
+                      transition={{ duration: 1.4, delay: n * 0.2, repeat: Infinity }}
+                      className="w-0.5 h-3 bg-text/20 rounded-full"
+                    />
+                  ))}
+                </div>
+                <span className="text-[10px] uppercase tracking-[0.3em]">Scroll through the journey</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

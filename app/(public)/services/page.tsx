@@ -1,117 +1,135 @@
-import { prisma } from "@/lib/prisma";
-import { parseFeatures } from "@/lib/utils";
-import { CheckCircle, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import {
-  Home, Building2, Hammer, LayoutGrid, Paintbrush, Building,
-  Wrench, Ruler, HardHat, Zap,
-} from "lucide-react";
 import type { Metadata } from "next";
-
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Comprehensive construction services including new homes, duplexes, renovations, granny flats and more.",
+  description: "New homes, duplexes, knockdown rebuilds, granny flats, multi-dwelling developments and subdivisions across Greater Sydney.",
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iconMap: Record<string, React.ComponentType<any>> = {
-  home: Home, building: Building2, hammer: Hammer, layout: LayoutGrid,
-  paintbrush: Paintbrush, buildings: Building, wrench: Wrench, ruler: Ruler,
-  "hard-hat": HardHat, zap: Zap,
-};
+const SERVICES = [
+  {
+    number: "01",
+    title: "New Home Builds",
+    tagline: "Custom homes designed around your family, not around the catalogue.",
+    description: "We design and build single and double-storey homes from a blank block. Every project starts with a detailed brief — your household's daily rhythms, your neighbourhood's character, the block's specific constraints. The result is a home that couldn't have been built for anyone else.",
+    details: ["Fixed-price contracts", "In-house architectural design", "Council submission managed by us", "3D walkthrough before approvals", "Weekly progress updates"],
+  },
+  {
+    number: "02",
+    title: "Duplexes & Dual Occupancy",
+    tagline: "Two dwellings, one build, maximum return on your block.",
+    description: "Duplex development requires careful planning to satisfy council, engineer and financier simultaneously. We've managed enough dual-occupancy builds to understand where most projects come unstuck — and how to avoid those problems before they become expensive.",
+    details: ["Feasibility assessment on your block", "Strata title advice", "Simultaneous or staged builds", "Rental yield optimisation", "Fixed-price guaranteed"],
+  },
+  {
+    number: "03",
+    title: "Knockdown Rebuilds",
+    tagline: "Keep the street you love. Lose the house that doesn't fit.",
+    description: "Knockdown rebuild is often the most cost-effective path to a new home in an established suburb. We manage the entire process: council approvals, demolition and asbestos clearance, temporary accommodation advice, and the construction of your new home — all under one fixed-price contract.",
+    details: ["Demolition to completion under one contract", "Asbestos and hazardous material management", "Temporary accommodation guidance", "Same council processes as new builds", "Block restaged for final inspection"],
+  },
+  {
+    number: "04",
+    title: "Granny Flats & Secondary Dwellings",
+    tagline: "Income-generating, family-accommodating, council-compliant.",
+    description: "A well-designed granny flat is one of the most versatile additions to a residential property. Whether it's for ageing parents, grown children, or a rental income stream, we deliver compliant secondary dwellings that don't feel like an afterthought.",
+    details: ["Compliant with NSW secondary dwelling code", "Can be built while main home is occupied", "Connection to existing services managed by us", "Optional separate metering", "Typically 8–12 week build time"],
+  },
+  {
+    number: "05",
+    title: "Multi-Dwelling Developments",
+    tagline: "Scale your development without scaling your risk.",
+    description: "From terraces to townhouse groups, we project-manage multi-dwelling builds with the same fixed-price rigour we apply to individual homes. Our in-house structural engineers and project managers have navigated enough complex DA processes to take the uncertainty out of higher-density residential development.",
+    details: ["Townhouses, terraces and villas", "In-house structural engineering", "DA and CC management", "Investor and owner-occupier configurations", "Staged handover available"],
+  },
+  {
+    number: "06",
+    title: "Subdivisions",
+    tagline: "Turn one block into an asset-producing portfolio.",
+    description: "Subdivision opens up development potential that's already sitting in the land you own. We work with surveyors, engineers and council to assess what your block can yield, then manage the subdivision and development process from start to title registration.",
+    details: ["Feasibility and yield assessment", "Surveying and engineering coordination", "Council submission and management", "Build-on option post-subdivision", "Title registration support"],
+  },
+];
 
-export default async function ServicesPage() {
-  const services = await prisma.service.findMany({
-    where: { published: true },
-    orderBy: { order: "asc" },
-  });
-
+export default function ServicesPage() {
   return (
-    <>
+    <div className="bg-bg pt-[70px]">
+
       {/* Hero */}
-      <section className="bg-dark pt-32 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-gold text-xs font-medium tracking-widest uppercase mb-4">What We Offer</p>
-          <h1 className="font-display font-bold text-5xl sm:text-6xl text-white mb-6">Our Services</h1>
-          <p className="text-white/50 text-lg max-w-xl">
-            End-to-end construction solutions — from initial design to final handover, we manage every detail.
+      <section className="py-24 lg:py-32 px-4 sm:px-6 lg:px-8 border-b border-text/[0.06]">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <span className="w-8 h-px bg-accent-secondary" />
+            <span className="text-accent-secondary text-[11px] font-semibold uppercase tracking-[0.4em]">What We Build</span>
+          </div>
+          <h1 className="font-display font-black text-[clamp(2.8rem,6vw,5.5rem)] text-text leading-[0.9] tracking-[-0.04em] mb-7">
+            Six things we build.<br />
+            <em className="text-accent-primary not-italic">All of them well.</em>
+          </h1>
+          <p className="text-text/50 text-lg leading-relaxed max-w-2xl">
+            We don&apos;t build everything. We build residential construction in Greater Sydney — and we&apos;ve narrowed our focus enough to be genuinely good at it.
           </p>
         </div>
       </section>
 
-      {/* Services */}
-      <section className="bg-dark pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
-          {services.map((service, i) => {
-            const Icon = iconMap[service.icon ?? "home"] ?? Home;
-            const features = parseFeatures(service.features);
-            const isEven = i % 2 === 0;
-
-            return (
-              <div
-                key={service.id}
-                id={service.slug}
-                className="group border border-white/5 hover:border-gold/20 rounded-sm overflow-hidden transition-all"
-              >
-                <div className={`grid grid-cols-1 lg:grid-cols-2 gap-0`}>
-                  <div className={`p-10 lg:p-14 ${isEven ? "order-1" : "order-1 lg:order-2"}`}>
-                    <div className="w-14 h-14 bg-gold/10 border border-gold/20 rounded-sm flex items-center justify-center mb-6">
-                      <Icon size={24} className="text-gold" />
-                    </div>
-                    <h2 className="font-display font-bold text-3xl text-white mb-4">{service.title}</h2>
-                    <p className="text-white/50 leading-relaxed mb-8">{service.description}</p>
-
-                    {features.length > 0 && (
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                        {features.map((f) => (
-                          <li key={f} className="flex items-center gap-2 text-white/60 text-sm">
-                            <CheckCircle size={14} className="text-gold flex-shrink-0" />
-                            {f}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <Link
-                      href="/contact"
-                      className="group/btn inline-flex items-center gap-2 border border-gold/40 hover:bg-gold hover:border-gold text-gold hover:text-dark font-semibold px-6 py-3 rounded-sm transition-all text-sm"
-                    >
-                      Enquire About This Service
-                      <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-
-                  <div className={`bg-dark-lighter flex items-center justify-center p-14 ${isEven ? "order-2" : "order-2 lg:order-1"}`}>
-                    <div className="text-center">
-                      <div className="text-white/5 font-display font-black text-[120px] leading-none select-none">
-                        {String(i + 1).padStart(2, "0")}
-                      </div>
-                      <div className="text-gold font-display font-semibold text-xl -mt-4">{service.title}</div>
-                    </div>
-                  </div>
+      {/* Services list */}
+      <section className="px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          {SERVICES.map((s, i) => (
+            <div
+              key={s.number}
+              className={`py-16 lg:py-20 grid lg:grid-cols-[1fr_2fr] gap-10 lg:gap-20 ${
+                i < SERVICES.length - 1 ? "border-b border-text/[0.06]" : ""
+              }`}
+            >
+              {/* Left */}
+              <div>
+                <div className="font-display font-black text-accent-primary text-[3.5rem] leading-none tracking-[-0.05em] mb-3">
+                  {s.number}
                 </div>
+                <h2 className="font-display font-black text-text text-2xl leading-tight tracking-[-0.03em] mb-3">
+                  {s.title}
+                </h2>
+                <p className="text-text/40 text-sm leading-relaxed italic">{s.tagline}</p>
               </div>
-            );
-          })}
+
+              {/* Right */}
+              <div>
+                <p className="text-text/55 text-[1rem] leading-[1.9] mb-7">{s.description}</p>
+                <ul className="space-y-2.5 mb-8">
+                  {s.details.map((d) => (
+                    <li key={d} className="flex items-start gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-primary mt-2 shrink-0" />
+                      <span className="text-text/45 text-sm">{d}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 text-accent-primary font-semibold text-sm hover:gap-3 transition-all duration-200"
+                >
+                  Discuss this project <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="bg-gold py-20">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="font-display font-bold text-4xl text-dark mb-4">Not Sure Which Service You Need?</h2>
-          <p className="text-dark/60 text-lg mb-8">Talk to our team and we&apos;ll guide you to the right solution for your project.</p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 bg-dark text-warm font-bold px-10 py-4 rounded-sm hover:bg-dark-lighter transition-colors text-sm uppercase tracking-wider"
-          >
-            Free Consultation
-            <ArrowRight size={16} />
+      <section className="bg-accent-primary py-20 px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-display font-black text-white text-[clamp(2rem,4vw,3.5rem)] leading-[0.95] tracking-[-0.03em] mb-5">
+            Not sure which service fits your project?
+          </h2>
+          <p className="text-white/60 mb-8 text-lg">Tell us what you have in mind. We&apos;ll tell you what&apos;s possible.</p>
+          <Link href="/contact" className="inline-flex items-center gap-2.5 bg-white text-accent-primary font-bold text-[12px] uppercase tracking-[0.22em] px-8 py-4">
+            Talk to Us <ArrowRight size={14} />
           </Link>
         </div>
       </section>
-    </>
+
+    </div>
   );
 }

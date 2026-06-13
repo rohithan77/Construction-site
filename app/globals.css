@@ -2,7 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design token palette ─────────────────────────────────────── */
 :root {
+  --color-bg: #F7F4ED;
+  --color-surface: #E8E2D6;
+  --color-text: #1C1B19;
+  --color-accent-primary: #B5694A;
+  --color-accent-secondary: #9CA88A;
+
+  /* Legacy admin vars */
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
@@ -23,8 +31,6 @@
   --input: 214.3 31.8% 91.4%;
   --ring: 40 65% 55%;
   --radius: 0.5rem;
-  --font-inter: 'Inter', sans-serif;
-  --font-playfair: 'Playfair Display', serif;
 }
 
 * {
@@ -34,57 +40,35 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
 }
 
 body {
-  background: #F5F4F0;
-  color: #1C1C1E;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-/* Premium display typography — tight tracking at large sizes */
-.font-display {
-  letter-spacing: -0.025em;
-}
-
 /* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1C1C1E;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #C9A84C;
-  border-radius: 3px;
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-accent-primary); border-radius: 3px; }
 
 /* Selection */
-::selection {
-  background: #C9A84C;
-  color: #1C1C1E;
-}
+::selection { background: var(--color-accent-primary); color: #fff; }
 
-/* Focus outline */
-:focus-visible {
-  outline: 2px solid #C9A84C;
-  outline-offset: 2px;
-}
+/* Focus */
+:focus-visible { outline: 2px solid var(--color-accent-primary); outline-offset: 2px; }
 
-/* Smooth transitions */
-a, button {
-  transition: all 0.2s ease;
-}
+/* Transitions */
+a, button { transition: all 0.2s ease; }
 
-/* TipTap editor styles */
-.tiptap-content h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; font-family: var(--font-playfair); }
-.tiptap-content h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; margin-top: 1.5rem; font-family: var(--font-playfair); }
+/* TipTap */
+.tiptap-content h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+.tiptap-content h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; margin-top: 1.5rem; }
 .tiptap-content h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; margin-top: 1.25rem; }
 .tiptap-content p { margin-bottom: 1rem; line-height: 1.75; }
 .tiptap-content ul { list-style: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
@@ -92,10 +76,9 @@ a, button {
 .tiptap-content li { margin-bottom: 0.25rem; }
 .tiptap-content strong { font-weight: 700; }
 .tiptap-content em { font-style: italic; }
-.tiptap-content a { color: #C9A84C; text-decoration: underline; }
-.tiptap-content blockquote { border-left: 3px solid #C9A84C; padding-left: 1rem; font-style: italic; margin: 1rem 0; }
+.tiptap-content a { color: var(--color-accent-primary); text-decoration: underline; }
+.tiptap-content blockquote { border-left: 3px solid var(--color-accent-primary); padding-left: 1rem; font-style: italic; margin: 1rem 0; }
 
-/* ProseMirror placeholder */
 .ProseMirror p.is-editor-empty:first-child::before {
   color: #9ca3af;
   content: attr(data-placeholder);
@@ -103,31 +86,9 @@ a, button {
   height: 0;
   pointer-events: none;
 }
+.ProseMirror { outline: none; min-height: 200px; }
 
-.ProseMirror {
-  outline: none;
-  min-height: 200px;
-}
-
-/* Image overlay */
+/* Project card overlay */
 .project-card-overlay {
-  background: linear-gradient(to top, rgba(28,28,30,0.95) 0%, rgba(28,28,30,0.4) 60%, transparent 100%);
-}
-
-/* Gold text gradient */
-.gold-text {
-  background: linear-gradient(135deg, #C9A84C 0%, #E2C47A 50%, #C9A84C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Grain texture overlay */
-.grain-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1;
+  background: linear-gradient(to top, rgba(28,27,25,0.95) 0%, rgba(28,27,25,0.4) 60%, transparent 100%);
 }

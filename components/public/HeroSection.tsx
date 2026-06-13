@@ -1,216 +1,229 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ChevronDown, Award, Shield, Clock } from "lucide-react";
-import { ease } from "@/lib/animations";
+import { motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowRight } from "lucide-react";
 
-interface HeroSectionProps {
-  title?: string;
-  subtitle?: string;
-  ctaPrimary?: string;
-  ctaSecondary?: string;
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── Contemporary flat-roof Sydney home elevation ─────────────── */
+function HouseSVG({ svgRef }: { svgRef: React.Ref<SVGSVGElement> }) {
+  return (
+    <svg
+      ref={svgRef}
+      viewBox="0 0 900 520"
+      fill="none"
+      stroke="var(--color-accent-primary)"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="w-full h-full"
+      aria-hidden
+    >
+      {/* Ground floor full width */}
+      <path d="M80,330 L80,500 L820,500 L820,330 Z" />
+      {/* Upper floor walls */}
+      <path d="M250,180 L250,330 M650,180 L650,330" />
+      {/* Flat parapet */}
+      <path d="M230,178 L670,178" />
+      <path d="M230,178 L230,163 M670,178 L670,163" />
+      <path d="M218,161 L682,161" />
+      {/* Canopy / floor transition */}
+      <path d="M50,330 L850,330" />
+      {/* Left section windows */}
+      <path d="M100,352 L100,490 L178,490 L178,352 Z" />
+      <path d="M188,352 L188,490 L250,490 L250,352 Z" />
+      {/* Upper feature window */}
+      <path d="M270,195 L270,323 L630,323 L630,195 Z" />
+      <path d="M270,260 L630,260" />
+      <path d="M360,195 L360,323 M450,195 L450,323 M540,195 L540,323" />
+      {/* Entry door */}
+      <path d="M370,412 L370,500 L460,500 L460,412 Z" />
+      <circle cx="376" cy="458" r="4" />
+      {/* Sidelights */}
+      <path d="M348,424 L348,470 L368,470 L368,424 Z" />
+      <path d="M462,424 L462,470 L482,470 L482,424 Z" />
+      {/* Garage */}
+      <path d="M638,330 L638,500" />
+      <path d="M652,348 L652,498 L808,498 L808,348 Z" />
+      <path d="M652,388 L808,388 M652,428 L808,428 M652,464 L808,464" />
+      {/* Chimney */}
+      <path d="M695,140 L695,180 L728,180 L728,140 Z" />
+      <path d="M685,138 L738,138" />
+      {/* Ground line */}
+      <path d="M20,500 L880,500" />
+      {/* Landscaping */}
+      <path d="M22,500 Q33,488 44,500 Q55,488 66,500" />
+      <path d="M836,500 Q847,488 858,500 Q869,488 880,500" />
+    </svg>
+  );
 }
 
-const HEADLINE_LINES = ["Building", "Extraordinary", "Homes."];
+export default function HeroSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const svgWrapRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const photoRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
 
-export default function HeroSection({
-  subtitle = "Premium residential and commercial construction across Greater Sydney — new homes, duplexes, granny flats and knockdown rebuilds, built with precision and pride.",
-  ctaPrimary = "View Our Work",
-  ctaSecondary = "Free Consultation",
-}: HeroSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  // Scroll-linked parallax: content fades & lifts as user scrolls past hero
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
+    // Animate SVG drawing on load
+    const svgEl = svgRef.current;
+    if (svgEl) {
+      const elements = Array.from(svgEl.querySelectorAll("path, circle"));
+      elements.forEach((el) => {
+        const geom = el as SVGGeometryElement;
+        if (typeof geom.getTotalLength === "function") {
+          const len = geom.getTotalLength();
+          gsap.set(el, { strokeDasharray: len, strokeDashoffset: len });
+        }
+      });
+      gsap.to(elements, {
+        strokeDashoffset: 0,
+        duration: 0.7,
+        stagger: 0.04,
+        ease: "power2.out",
+        delay: 0.7,
+      });
+    }
 
-  const bgScale    = useTransform(scrollYProgress, [0, 1], [1.0, 1.15]);
-  const bgOpacity  = useTransform(scrollYProgress, [0, 0.8], [1, 0.3]);
-  const contentY   = useTransform(scrollYProgress, [0, 1], ["0px", "-120px"]);
-  const contentOp  = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
+    // Scroll-scrubbed crossfade: drawing → photo
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1.2,
+        },
+      });
+      tl.to(svgWrapRef.current, { opacity: 0, duration: 0.5 }, 0)
+        .to(photoRef.current, { opacity: 1, duration: 0.65 }, 0)
+        .to(headlineRef.current, { opacity: 0, y: -70, duration: 0.4 }, 0);
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section
-      ref={ref}
-      className="relative h-screen min-h-[700px] overflow-hidden flex flex-col"
-    >
-      {/* ── Video / image background ─────────────────────────────── */}
-      <motion.div className="absolute inset-0 z-0" style={{ scale: bgScale, opacity: bgOpacity }}>
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1920&auto=format&fit=crop&q=80"
-        >
-          {/* Replace with your own video for production */}
-          <source
-            src="https://videos.pexels.com/video-files/2792358/2792358-hd_1280_720_30fps.mp4"
-            type="video/mp4"
+    <section ref={sectionRef} style={{ height: "200vh" }} className="relative">
+      <div className="sticky top-0 h-screen overflow-hidden bg-bg">
+
+        {/* Photo — hidden until scroll */}
+        <div ref={photoRef} className="absolute inset-0 opacity-0">
+          <Image
+            src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1920&auto=format&fit=crop&q=85"
+            alt="Completed contemporary Sydney home"
+            fill
+            className="object-cover"
+            priority
           />
-        </video>
-      </motion.div>
+          <div className="absolute inset-0 bg-text/25" />
+        </div>
 
-      {/* ── Overlays ─────────────────────────────────────────────── */}
-      {/* Left dark vignette so text is always readable */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#0A0A0B]/95 via-[#0A0A0B]/65 to-transparent" />
-      {/* Bottom vignette for smooth section blend */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-[#0A0A0B] via-transparent to-[#0A0A0B]/30" />
-      {/* Subtle grain */}
-      <div
-        className="absolute inset-0 z-[2] opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")",
-        }}
-      />
+        {/* SVG drawing */}
+        <div
+          ref={svgWrapRef}
+          className="absolute inset-0 flex items-center justify-center px-8 sm:px-16 lg:px-28"
+          style={{ paddingTop: "70px", paddingBottom: "180px" }}
+        >
+          <div className="w-full max-w-4xl">
+            <HouseSVG svgRef={svgRef} />
+          </div>
+        </div>
 
-      {/* ── Content ──────────────────────────────────────────────── */}
-      <motion.div
-        style={{ y: contentY, opacity: contentOp }}
-        className="relative z-10 flex-1 flex items-center"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-2xl xl:max-w-3xl">
-
-            {/* Label */}
+        {/* Headline overlay */}
+        <div
+          ref={headlineRef}
+          className="absolute inset-0 flex flex-col justify-end pb-16 sm:pb-20 px-8 sm:px-14 lg:px-20 pointer-events-none"
+        >
+          <div className="pointer-events-auto max-w-2xl">
             <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, ease }}
-              className="flex items-center gap-3 mb-10"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 1.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 mb-5"
             >
-              <span className="w-10 h-[1.5px] bg-gold" />
-              <span className="text-gold text-[11px] font-semibold tracking-[0.38em] uppercase">
-                Greater Sydney's Premier Builder
+              <span className="w-8 h-px bg-accent-secondary" />
+              <span className="text-text/45 text-[11px] font-semibold uppercase tracking-[0.42em]">
+                Sydney Residential Construction
               </span>
             </motion.div>
 
-            {/* Headline — line-by-line reveal */}
-            <div className="mb-8 overflow-hidden">
-              {HEADLINE_LINES.map((line, i) => (
-                <div key={i} className="overflow-hidden leading-[1.02]">
-                  <motion.span
-                    initial={{ y: "110%" }}
-                    animate={{ y: "0%" }}
-                    transition={{ duration: 0.9, delay: 0.15 + i * 0.2, ease }}
-                    className={`block font-display font-black tracking-tight text-[clamp(3.5rem,7vw,6.5rem)] leading-[1.02] ${
-                      i === 1 ? "text-gold italic" : "text-white"
-                    }`}
-                  >
-                    {line}
-                  </motion.span>
-                </div>
-              ))}
-            </div>
-
-            {/* Divider line */}
-            <motion.div
-              initial={{ scaleX: 0, originX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 1, delay: 0.8, ease }}
-              className="w-24 h-px bg-white/20 mb-8"
-            />
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.9, ease }}
-              className="text-white/50 text-[1.05rem] leading-[1.85] max-w-[500px] mb-12"
+            <motion.h1
+              initial={{ opacity: 0, y: 55, filter: "blur(14px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1.1, delay: 1.7, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display font-black text-[clamp(2.8rem,7.5vw,6.5rem)] text-text leading-[0.88] tracking-[-0.04em] mb-7"
             >
-              {subtitle}
+              Your home,
+              <br />
+              <em className="text-accent-primary not-italic">precisely</em>
+              <br />
+              delivered.
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 2.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-text/48 text-[1rem] leading-[1.85] max-w-[420px] mb-8"
+            >
+              New homes, duplexes and knockdown rebuilds for Greater Sydney. Fixed price. No surprises. Since 2016.
             </motion.p>
 
-            {/* CTA buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.05, ease }}
-              className="flex flex-col sm:flex-row gap-4 mb-16"
+              transition={{ duration: 0.6, delay: 2.35, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col sm:flex-row gap-3"
             >
-              <Link
-                href="/projects"
-                className="group inline-flex items-center justify-center gap-2.5 bg-gold hover:bg-gold-light text-dark font-black text-[13px] uppercase tracking-[0.2em] px-10 py-4 transition-all duration-300 hover:shadow-[0_20px_60px_-10px_rgba(201,168,76,0.5)]"
-              >
-                {ctaPrimary}
-                <ArrowRight size={15} className="group-hover:translate-x-1.5 transition-transform" />
-              </Link>
               <Link
                 href="/contact"
-                className="group inline-flex items-center justify-center gap-2.5 border border-white/15 hover:border-gold/50 text-white/55 hover:text-white font-semibold text-[13px] uppercase tracking-[0.2em] px-10 py-4 transition-all duration-300 backdrop-blur-sm"
+                className="inline-flex items-center gap-2.5 bg-accent-primary hover:bg-accent-primary/85 text-white font-bold text-[12px] uppercase tracking-[0.22em] px-8 py-4 transition-all duration-300 hover:shadow-[0_16px_48px_-10px_rgba(181,105,74,0.45)]"
               >
-                {ctaSecondary}
-                <ArrowRight size={15} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                Start Your Build
+                <ArrowRight size={14} />
+              </Link>
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2.5 border border-text/16 hover:border-text/32 text-text/55 hover:text-text font-semibold text-[12px] uppercase tracking-[0.18em] px-8 py-4 transition-all duration-300"
+              >
+                View Our Work
               </Link>
             </motion.div>
-
-            {/* Trust badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 1.25, ease }}
-              className="flex flex-wrap gap-6"
-            >
-              {[
-                { icon: Shield, text: "Licensed & Insured" },
-                { icon: Award, text: "Award-Winning Builder" },
-                { icon: Clock, text: "On-Time Guarantee" },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2.5">
-                  <Icon size={13} className="text-gold" />
-                  <span className="text-white/40 text-xs tracking-wide">{text}</span>
-                </div>
-              ))}
-            </motion.div>
           </div>
         </div>
-      </motion.div>
 
-      {/* ── Scroll indicator ─────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 0.8 }}
-        className="relative z-10 flex flex-col items-center pb-8 gap-1"
-      >
-        <span className="text-white/20 text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+        {/* Scroll indicator */}
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 3.2, duration: 1 }}
+          className="absolute bottom-8 right-8 sm:right-12 flex flex-col items-center gap-2"
         >
-          <ChevronDown size={16} className="text-gold/40" />
-        </motion.div>
-      </motion.div>
-
-      {/* ── Bottom stats strip ───────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
-        className="relative z-10 bg-white/[0.03] backdrop-blur-md border-t border-white/[0.06]"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4">
-            {[
-              { v: "500+", l: "Homes Built" },
-              { v: "25+", l: "Years Experience" },
-              { v: "98%", l: "Client Satisfaction" },
-              { v: "50+", l: "Team Members" },
-            ].map(({ v, l }, i) => (
-              <div key={l} className={`py-5 px-6 text-center ${i < 3 ? "border-r border-white/[0.06]" : ""}`}>
-                <div className="text-gold font-display font-black text-xl">{v}</div>
-                <div className="text-white/25 text-[10px] tracking-widest uppercase mt-0.5">{l}</div>
-              </div>
-            ))}
+          <span
+            className="text-text/22 text-[9px] uppercase tracking-[0.4em]"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            Scroll
+          </span>
+          <div className="w-px h-14 bg-text/10 overflow-hidden mt-2">
+            <motion.div
+              animate={{ y: ["-100%", "100%"] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              className="w-full h-1/2 bg-accent-primary"
+            />
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,91 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star } from "lucide-react";
 import { Testimonial } from "@/types";
-import { fadeUp, staggerContainer, viewportConfig } from "@/lib/animations";
 
-interface TestimonialsSectionProps { testimonials: Testimonial[] }
+const FALLBACK: Testimonial[] = [
+  {
+    id: "t1",
+    name: "Sarah & Tom K.",
+    role: "New Home Build",
+    company: "Castle Hill",
+    text: "We'd been through three builders who gave us the same box-plan in different colours. Build Demo spent four sessions just listening before they put pencil to paper. The result is a home that actually fits our family.",
+    rating: 5,
+    published: true,
+    order: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "t2",
+    name: "Michael R.",
+    role: "Knockdown Rebuild",
+    company: "Kellyville",
+    text: "Fixed price meant fixed price. Not a single variation we didn't approve first. That kind of honesty is rare in construction — and it made a genuinely stressful process feel manageable.",
+    rating: 5,
+    published: true,
+    order: 1,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: "t3",
+    name: "Priya & David N.",
+    role: "Duplex",
+    company: "Norwest",
+    text: "The project manager called every Friday at 4pm without us having to chase. When there was an issue with the slab they told us the same day. That communication made everything manageable.",
+    rating: 5,
+    published: true,
+    order: 2,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+];
 
-export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+export default function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+  const items = testimonials.length > 0 ? testimonials : FALLBACK;
   const [current, setCurrent] = useState(0);
-  const [dir, setDir] = useState(1);
 
-  useEffect(() => {
-    if (testimonials.length < 2) return;
-    const t = setInterval(() => { setDir(1); setCurrent((c) => (c + 1) % testimonials.length); }, 7000);
-    return () => clearInterval(t);
-  }, [testimonials.length]);
-
-  const go = (d: number) => { setDir(d); setCurrent((c) => (c + d + testimonials.length) % testimonials.length); };
-
-  if (!testimonials.length) return null;
-  const t = testimonials[current];
+  const t = items[current];
 
   return (
-    // Warm cream section — premium builders use light sections for testimonials
-    <section className="relative bg-[#F9F7F4] py-28 lg:py-36 overflow-hidden">
-      <div className="absolute top-0 inset-x-0 h-px bg-dark/[0.06]" />
-
-      {/* Decorative oversized quote mark */}
-      <div className="absolute top-12 left-8 font-display font-black text-[20rem] leading-none text-dark/[0.025] select-none pointer-events-none">
+    <section className="bg-surface py-28 lg:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Decorative quote */}
+      <div
+        className="absolute font-display font-black text-[18rem] leading-none text-text/[0.025] select-none pointer-events-none"
+        style={{ top: "12px", left: "2rem" }}
+        aria-hidden
+      >
         &ldquo;
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={viewportConfig}
-          variants={staggerContainer}
+          viewport={{ once: true, margin: "-80px" }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
           className="text-center mb-16"
         >
-          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 mb-5">
-            <span className="w-8 h-px bg-dark/20" />
-            <span className="text-dark/40 text-[11px] font-semibold uppercase tracking-[0.35em]">Client Stories</span>
-            <span className="w-8 h-px bg-dark/20" />
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22,1,0.36,1] } } }}
+            className="flex items-center justify-center gap-3 mb-5"
+          >
+            <span className="w-8 h-px bg-text/20" />
+            <span className="text-text/40 text-[11px] font-semibold uppercase tracking-[0.4em]">Client Stories</span>
+            <span className="w-8 h-px bg-text/20" />
           </motion.div>
           <motion.h2
-            variants={fadeUp}
-            className="font-display font-black text-[clamp(2.5rem,5vw,4rem)] text-dark leading-[0.95] tracking-[-0.03em]"
+            variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22,1,0.36,1] } } }}
+            className="font-display font-black text-[clamp(2.4rem,5vw,4rem)] text-text leading-[0.95] tracking-[-0.03em]"
           >
-            What Our Clients{" "}
-            <span className="text-gold italic font-bold">Say</span>
+            What our clients{" "}
+            <em className="text-accent-primary not-italic">say</em>
           </motion.h2>
         </motion.div>
 
-        {/* Testimonial slider */}
-        <div className="relative min-h-[240px] flex items-center justify-center">
-          <AnimatePresence mode="wait" custom={dir}>
+        {/* Slider */}
+        <div className="relative min-h-[260px] flex items-center justify-center">
+          <AnimatePresence mode="wait">
             <motion.div
               key={current}
-              custom={dir}
-              initial={{ opacity: 0, x: dir * 60, filter: "blur(6px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: dir * -60, filter: "blur(6px)" }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="text-center w-full"
             >
               {/* Stars */}
               <div className="flex justify-center gap-1 mb-8">
                 {Array.from({ length: t.rating ?? 5 }).map((_, i) => (
-                  <Star key={i} size={15} className="text-gold fill-gold" />
+                  <Star key={i} size={14} className="text-accent-primary fill-accent-primary" />
                 ))}
               </div>
 
-              {/* Quote text */}
-              <blockquote className="font-display font-light italic text-[clamp(1.4rem,2.8vw,2.1rem)] text-dark/75 leading-[1.45] mb-10 max-w-3xl mx-auto tracking-[-0.01em]">
+              {/* Quote */}
+              <blockquote className="font-display font-light italic text-[clamp(1.3rem,2.5vw,1.95rem)] text-text/72 leading-[1.5] mb-10 max-w-3xl mx-auto tracking-[-0.01em]">
                 &ldquo;{t.text}&rdquo;
               </blockquote>
 
               {/* Author */}
               <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-[1.5px] bg-gold mb-1" />
-                <span className="text-dark font-semibold text-sm tracking-wide">{t.name}</span>
+                <div className="w-8 h-[1.5px] bg-accent-primary mb-1" />
+                <span className="text-text font-semibold text-sm">{t.name}</span>
                 {(t.role || t.company) && (
-                  <span className="text-dark/35 text-xs tracking-wider">
+                  <span className="text-text/35 text-xs tracking-wide">
                     {[t.role, t.company].filter(Boolean).join(" · ")}
                   </span>
                 )}
@@ -94,36 +124,21 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
           </AnimatePresence>
         </div>
 
-        {/* Navigation */}
-        {testimonials.length > 1 && (
-          <div className="flex items-center justify-center gap-6 mt-12">
-            <button
-              onClick={() => go(-1)}
-              className="w-10 h-10 border border-dark/15 hover:border-dark/40 flex items-center justify-center text-dark/25 hover:text-dark transition-all duration-300"
-            >
-              <ChevronLeft size={16} />
-            </button>
-
-            <div className="flex gap-2">
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setDir(i > current ? 1 : -1); setCurrent(i); }}
-                  className={`transition-all duration-300 ${
-                    i === current
-                      ? "w-6 h-1.5 bg-gold"
-                      : "w-1.5 h-1.5 rounded-full bg-dark/15 hover:bg-dark/30"
-                  }`}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={() => go(1)}
-              className="w-10 h-10 border border-dark/15 hover:border-dark/40 flex items-center justify-center text-dark/25 hover:text-dark transition-all duration-300"
-            >
-              <ChevronRight size={16} />
-            </button>
+        {/* Dot navigation */}
+        {items.length > 1 && (
+          <div className="flex justify-center gap-2.5 mt-10">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`transition-all duration-300 ${
+                  i === current
+                    ? "w-7 h-[3px] bg-accent-primary"
+                    : "w-[6px] h-[6px] rounded-full bg-text/18 hover:bg-text/35"
+                }`}
+                aria-label={`Testimonial ${i + 1}`}
+              />
+            ))}
           </div>
         )}
       </div>
