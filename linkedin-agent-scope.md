@@ -19,6 +19,7 @@ This project builds a LinkedIn AI agent that operates as a trusted delegate — 
 3. [Safety Design](#3-safety-design)
 4. [What Makes This Different](#4-what-makes-this-different)
 5. [Core Features — Shared](#5-core-features--shared)
+   - [5.0 Inbox Intelligence — Existing Network Audit](#50-inbox-intelligence--existing-network-audit)
 6. [Job Seeker Mode Features](#6-job-seeker-mode-features)
 7. [Business Owner Mode Features](#7-business-owner-mode-features)
 8. [Approval Workflow](#8-approval-workflow)
@@ -150,6 +151,76 @@ The dashboard shows the owner's response rate against industry benchmarks, tells
 ## 5. Core Features — Shared
 
 These features are active in both modes.
+
+### 5.0 Inbox Intelligence — Existing Network Audit
+
+**This runs before anything else.** On first setup, and weekly thereafter, the agent reads through the owner's full LinkedIn message history to find opportunities that already exist — warm conversations that went cold, threads that need a reply, and contacts worth re-engaging. The best leads are already in the inbox.
+
+#### What It Does
+
+**Step 1: Full inbox scan**
+
+The agent reads all existing LinkedIn message threads and classifies each one:
+
+| Classification | Definition |
+|---|---|
+| Needs reply | The other person sent the last message and the owner hasn't responded |
+| Warm — dormant | A positive conversation that ended with no clear follow-up; last message > 14 days ago |
+| Cold — worth reviving | Connected but no meaningful conversation; contact is still relevant to current goals |
+| Active | Conversation ongoing within the last 7 days — no action needed |
+| Closed | Concluded naturally or contact is no longer relevant |
+
+**Step 2: Opportunity scoring**
+
+Each dormant or needs-reply thread is scored by:
+
+- Recency of last interaction (more recent = easier to revive)
+- Warmth of the conversation (did the other person engage positively? ask questions? offer help?)
+- Relevance to current goals (does this person match the active mode's ICP or target role?)
+- Whether there was an explicit next step mentioned that was never followed through
+
+**Step 3: Surfacing to owner**
+
+High-scoring threads surface in the morning briefing on day one, before any outbound activity begins:
+
+```
+Inbox audit complete — 4 conversations worth reviving
+
+1. James Okafor, Engineering Manager @ Stripe
+   Last message: 18 days ago — he asked about your availability for a call.
+   You never replied.
+   [View thread] [Draft reply]
+
+2. Priya Nair, Recruiter @ Notion
+   Last message: 32 days ago — she mentioned a role opening up in Q3.
+   A follow-up now would be timely.
+   [View thread] [Draft follow-up]
+
+3. Tom Reyes, VP Product @ Linear
+   Connected 6 weeks ago. No conversation started.
+   He's active on LinkedIn and posted about hiring last week.
+   [Draft intro message]
+
+4. Aisha Mensah, Co-founder @ Daybreak
+   Strong conversation 3 months ago about collaboration.
+   No follow-up happened. She's still active.
+   [Draft re-engagement]
+```
+
+The owner can act on these immediately or defer them to the queue. They are prioritized above outbound prospecting — a warm revival always outperforms a cold approach.
+
+**Step 4: Ongoing monitoring**
+
+After the initial audit, the agent monitors for:
+
+- Any thread where the owner is the last sender and no reply has come in 7+ days (follow-up opportunity)
+- Any thread where the other person sent a message the owner hasn't seen or replied to (needs reply alert — surfaces same day, not in the next morning briefing)
+
+#### Why This Runs First
+
+Cold outreach to strangers is the hardest form of networking. A person who already knows the owner, had a positive exchange, and is still active on LinkedIn is a far warmer lead. Reviving three dormant conversations typically produces better outcomes than sending thirty new connection requests. The inbox audit ensures the agent does the easy, high-value work before the hard, low-yield work.
+
+---
 
 ### 5.1 Tone Engine
 
