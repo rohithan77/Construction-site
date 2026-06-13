@@ -128,22 +128,20 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-text/25" />
         </div>
 
-        {/* SVG drawing — top 60% on mobile, full center on desktop */}
+        {/* SVG drawing — flush to top on mobile, centered in zone on desktop */}
         <div
           ref={svgWrapRef}
-          className="absolute inset-x-0 top-[70px] flex items-center justify-center px-6 sm:px-16 lg:px-28"
-          style={{ bottom: "42%" }}
+          className="absolute inset-x-0 top-[64px] flex items-start sm:items-center justify-center px-3 sm:px-16 lg:px-28 bottom-[54%] sm:bottom-[42%]"
         >
-          <div className="w-full max-w-4xl">
+          <div className="w-full sm:max-w-4xl">
             <HouseSVG svgRef={svgRef} />
           </div>
         </div>
 
-        {/* Headline overlay — bottom 44%, never overlaps SVG */}
+        {/* Headline overlay — starts at 46% on mobile, 56% on desktop */}
         <div
           ref={headlineRef}
-          className="absolute inset-x-0 bottom-0 flex flex-col justify-end pb-10 sm:pb-16 lg:pb-20 px-8 sm:px-14 lg:px-20 pointer-events-none"
-          style={{ top: "56%" }}
+          className="absolute inset-x-0 bottom-0 flex flex-col justify-end pb-10 sm:pb-16 lg:pb-20 px-8 sm:px-14 lg:px-20 pointer-events-none top-[46%] sm:top-[56%]"
         >
           <div className="pointer-events-auto max-w-2xl">
             <motion.div
@@ -184,7 +182,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 2.35, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col sm:flex-row gap-3"
+              className="flex flex-col sm:flex-row gap-3 items-start"
             >
               <Link
                 href="/contact"
