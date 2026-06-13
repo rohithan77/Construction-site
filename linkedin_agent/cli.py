@@ -279,6 +279,7 @@ async def _setup() -> None:
         user.linkedin_profile_id = linkedin_url.rstrip("/").split("/")[-1]
         user.email = email
         user.mode = "job_seeker"
+        user.is_active = True
         user.target_roles = [r.strip() for r in roles.split(",")]
         user.target_locations = [loc.strip() for loc in locations.split(",")]
         user.target_countries = [c.strip() for c in countries.split(",")]
