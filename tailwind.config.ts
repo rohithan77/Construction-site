@@ -10,12 +10,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Design token system ──────────────────────────────────
-        bg: "var(--color-bg)",
-        surface: "var(--color-surface)",
-        text: "var(--color-text)",
-        "accent-primary": "var(--color-accent-primary)",
-        "accent-secondary": "var(--color-accent-secondary)",
+        // ── Design token system (RGB format enables opacity modifiers) ──
+        bg: "rgb(var(--color-bg) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        text: "rgb(var(--color-text) / <alpha-value>)",
+        "accent-primary": "rgb(var(--color-accent-primary) / <alpha-value>)",
+        "accent-secondary": "rgb(var(--color-accent-secondary) / <alpha-value>)",
         // ── Legacy (admin panel) ─────────────────────────────────
         background: "var(--background)",
         foreground: "var(--foreground)",

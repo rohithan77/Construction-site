@@ -20,7 +20,7 @@ const LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-text text-bg/60">
+    <footer className="relative bg-[#1C1B19] text-[#F7F4ED]/60">
       {/* Top accent */}
       <div className="h-[2px] bg-gradient-to-r from-transparent via-accent-primary/60 to-transparent" />
 

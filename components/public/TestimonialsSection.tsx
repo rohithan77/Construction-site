@@ -51,11 +51,11 @@ export default function TestimonialsSection({ testimonials }: { testimonials: Te
   const t = items[current];
 
   return (
-    <section className="bg-surface py-28 lg:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Decorative quote */}
+    <section className="relative bg-surface py-28 lg:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Decorative quote — contained by relative+overflow-hidden */}
       <div
-        className="absolute font-display font-black text-[18rem] leading-none text-text/[0.025] select-none pointer-events-none"
-        style={{ top: "12px", left: "2rem" }}
+        className="absolute font-display font-black leading-none text-text/[0.04] select-none pointer-events-none"
+        style={{ fontSize: "clamp(8rem,22vw,18rem)", top: "0", left: "1rem" }}
         aria-hidden
       >
         &ldquo;

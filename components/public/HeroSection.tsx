@@ -152,7 +152,7 @@ export default function HeroSection() {
               className="flex items-center gap-3 mb-5"
             >
               <span className="w-8 h-px bg-accent-secondary" />
-              <span className="text-text/45 text-[11px] font-semibold uppercase tracking-[0.42em]">
+              <span className="text-text/45 text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] sm:tracking-[0.38em]">
                 Sydney Residential Construction
               </span>
             </motion.div>

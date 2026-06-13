@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design token palette ─────────────────────────────────────── */
+/* ── Design token palette (RGB channels for Tailwind opacity support) ─── */
 :root {
-  --color-bg: #F7F4ED;
-  --color-surface: #E8E2D6;
-  --color-text: #1C1B19;
-  --color-accent-primary: #B5694A;
-  --color-accent-secondary: #9CA88A;
+  --color-bg: 247 244 237;           /* #F7F4ED */
+  --color-surface: 232 226 214;      /* #E8E2D6 */
+  --color-text: 28 27 25;            /* #1C1B19 */
+  --color-accent-primary: 181 105 74;   /* #B5694A */
+  --color-accent-secondary: 156 168 138; /* #9CA88A */
 
   /* Legacy admin vars */
   --background: 0 0% 100%;
@@ -44,8 +44,8 @@ html {
 }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
   font-family: var(--font-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -54,14 +54,14 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--color-surface); }
-::-webkit-scrollbar-thumb { background: var(--color-accent-primary); border-radius: 3px; }
+::-webkit-scrollbar-track { background: rgb(var(--color-surface)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--color-accent-primary)); border-radius: 3px; }
 
 /* Selection */
-::selection { background: var(--color-accent-primary); color: #fff; }
+::selection { background: rgb(var(--color-accent-primary)); color: #fff; }
 
 /* Focus */
-:focus-visible { outline: 2px solid var(--color-accent-primary); outline-offset: 2px; }
+:focus-visible { outline: 2px solid rgb(var(--color-accent-primary)); outline-offset: 2px; }
 
 /* Transitions */
 a, button { transition: all 0.2s ease; }
