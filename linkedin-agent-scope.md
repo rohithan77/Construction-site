@@ -611,19 +611,24 @@ If the owner has fewer than 5 LinkedIn posts (insufficient corpus):
 
 ## 10. Tech Stack
 
-| Component | Technology | Purpose |
+| Component | Technology | Notes |
 |---|---|---|
 | Language | Python 3.11+ | Core runtime |
-| AI — primary | Claude Sonnet (claude-sonnet-4-6) | Drafting, prospect scoring, tone matching, authenticity checks |
-| AI — classifier | Claude Haiku (claude-haiku-4-5) | Sentiment analysis, quick classification tasks |
-| Browser automation | Playwright + playwright-stealth | LinkedIn interaction with anti-detection |
-| Scheduling | APScheduler | Run scheduling with built-in jitter support |
-| Database | PostgreSQL + SQLAlchemy + Alembic | Persistent storage; migration management |
-| Approval notifications | python-telegram-bot | Telegram approval workflow |
-| Web UI | FastAPI | Fallback approval interface, dashboard |
-| Rate limiting / cache | Redis | Per-action counters, session cache |
-| Configuration | pydantic-settings | Typed, validated config management |
-| Open-web research | SerpAPI | Company intel, news signals |
+| AI — primary | Claude Sonnet (`claude-sonnet-4-6`) | Drafting, tone matching, authenticity checks |
+| AI — classifier | Claude Haiku (`claude-haiku-4-5`) | Sentiment analysis, quick classification |
+| Agent orchestration | pydantic-ai V1 | Type-safe, Anthropic-native, built-in HITL support |
+| LinkedIn data layer | `linkedin-api` (tomquirk) | Unofficial internal API — profiles, inbox, connections, jobs, messaging. Replaces ~60% of custom scraper work. |
+| Job monitoring | `python-jobspy` (speedyapply/JobSpy) | Scrapes LinkedIn + Indeed + Glassdoor + more in one call. Replaces custom job scraper entirely. |
+| Browser automation | Playwright + `patchright` | For posting content and CAPTCHA handling. `patchright` replaces the stalled `playwright-stealth`. |
+| Scheduling | APScheduler | Randomized 2.5–4.5 hour intervals |
+| Database | PostgreSQL + SQLAlchemy + Alembic | Persistent storage; async-compatible |
+| Approval notifications | python-telegram-bot | Telegram bot for mobile approvals |
+| Web UI | FastAPI + Jinja2 | Dashboard, activity log, settings |
+| Rate limiting / cache | Redis | Per-action daily counters, session cache |
+| Configuration | pydantic-settings | Typed config with validation |
+| Open-web research | SerpAPI (`google-search-results`) | Company intel, news, headcount signals |
+| Email fallback | SendGrid | Approval notifications if Telegram unavailable |
+| Sheets export | gspread + google-auth | Optional Google Sheets sync for business owners |
 
 ---
 

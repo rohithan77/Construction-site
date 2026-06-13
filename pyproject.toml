@@ -8,60 +8,76 @@ version = "0.1.0"
 description = "A safe, intelligent LinkedIn automation agent with human-in-the-loop approval"
 requires-python = ">=3.11"
 dependencies = [
-    # AI / LLM
+    # ── AI / LLM ────────────────────────────────────────────────────────────
     "anthropic>=0.30.0",
 
-    # Browser automation (LinkedIn interaction)
-    "playwright>=1.44.0",
-    "playwright-stealth>=1.0.6",
+    # ── LinkedIn (unofficial internal API — replaces ~60% of scraper layer) ─
+    # github.com/tomquirk/linkedin-api
+    # Fetches profiles, inbox, connections, jobs; sends messages & requests.
+    # No browser required for data operations.
+    "linkedin-api>=2.1.0",
 
-    # Scheduling
+    # ── Job scraping (LinkedIn + Indeed + Glassdoor + more in one call) ─────
+    # github.com/speedyapply/JobSpy
+    "python-jobspy>=1.1.80",
+
+    # ── Agent orchestration (Anthropic-native, type-safe, HITL support) ─────
+    # pydantic-ai V1 — replaces hand-rolled agent loop
+    "pydantic-ai>=0.2.0",
+
+    # ── Browser automation (for posting, CAPTCHA handling, content scraping) ─
+    # patchright replaces playwright-stealth (which stalled in late 2024)
+    # github.com/Kaliiiiiiiiii-Vinyzu/patchright-python
+    "playwright>=1.44.0",
+    "patchright>=1.44.0",
+
+    # ── Scheduling ───────────────────────────────────────────────────────────
     "apscheduler>=3.10.4",
 
-    # Database
+    # ── Database ─────────────────────────────────────────────────────────────
     "sqlalchemy[asyncio]>=2.0.30",
     "alembic>=1.13.1",
     "asyncpg>=0.29.0",       # PostgreSQL async driver
     "aiosqlite>=0.20.0",     # SQLite async driver (dev/test)
 
-    # Cache / rate limiting
+    # ── Cache / rate limiting ────────────────────────────────────────────────
     "redis[hiredis]>=5.0.4",
 
-    # Web UI / API
+    # ── Web UI / API ─────────────────────────────────────────────────────────
     "fastapi>=0.111.0",
     "uvicorn[standard]>=0.29.0",
     "jinja2>=3.1.4",
-    "python-multipart>=0.0.9",  # form data
+    "python-multipart>=0.0.9",
 
-    # Telegram approval bot
+    # ── Telegram approval bot ────────────────────────────────────────────────
     "python-telegram-bot>=21.3",
 
-    # HTTP client (open-web research)
+    # ── HTTP client ──────────────────────────────────────────────────────────
     "httpx>=0.27.0",
 
-    # HTML parsing
+    # ── HTML parsing ─────────────────────────────────────────────────────────
     "beautifulsoup4>=4.12.3",
     "selectolax>=0.3.21",
 
-    # Web search / company intel
+    # ── Web search / company intel ───────────────────────────────────────────
     "google-search-results>=2.4.2",   # SerpAPI client
 
-    # Configuration & env
+    # ── Configuration & env ──────────────────────────────────────────────────
     "pydantic-settings>=2.3.0",
     "python-dotenv>=1.0.1",
 
-    # Email (approval fallback + reports)
+    # ── Email (approval fallback + reports) ──────────────────────────────────
     "sendgrid>=6.11.0",
 
-    # Google Sheets sync (optional export)
+    # ── Google Sheets sync (optional export) ─────────────────────────────────
     "gspread>=6.1.2",
     "google-auth>=2.29.0",
 
-    # Utilities
-    "tenacity>=8.3.0",    # retry logic
-    "structlog>=24.2.0",  # structured logging
+    # ── Utilities ────────────────────────────────────────────────────────────
+    "tenacity>=8.3.0",       # retry logic with exponential backoff
+    "structlog>=24.2.0",     # structured logging
     "cryptography>=42.0.8",  # cookie/credential encryption
-    "rich>=13.7.1",       # CLI output
+    "rich>=13.7.1",          # CLI output
 ]
 
 [project.optional-dependencies]
