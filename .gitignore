@@ -1,0 +1,51 @@
+# Environment
+.env
+.env.local
+
+# Secrets (never commit these)
+secrets/
+*.json.secret
+linkedin_cookies.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# Database (local dev)
+*.db
+*.sqlite3
+
+# Alembic (keep versions, ignore local state)
+alembic/versions/__pycache__/
+
+# Playwright
+playwright/.local-chromium/
+.playwright/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/

@@ -26,7 +26,9 @@ This project builds a LinkedIn AI agent that operates as a trusted delegate — 
 9. [Tone Engine](#9-tone-engine)
 10. [Tech Stack](#10-tech-stack)
 11. [Implementation Phases](#11-implementation-phases)
-12. [What Success Looks Like at 90 Days](#12-what-success-looks-like-at-90-days)
+12. [Reporting](#12-reporting)
+13. [Scope Gaps Addressed](#13-scope-gaps-addressed)
+14. [What Success Looks Like at 90 Days](#14-what-success-looks-like-at-90-days)
 
 ---
 
@@ -725,7 +727,80 @@ Deliverables:
 
 ---
 
-## 12. What Success Looks Like at 90 Days
+## 12. Reporting
+
+Four automated reports delivered without the owner asking for them.
+
+### 12.1 Weekly Network Summary *(every Monday, 8 AM via Telegram + web)*
+
+A one-page snapshot of the past 7 days:
+
+| Metric | This Week | Last Week |
+|---|---|---|
+| Connection requests sent | 38 | 35 |
+| Acceptance rate | 62% | 54% |
+| Messages sent | 18 | 22 |
+| Reply rate | 5.6% | 4.1% |
+| Warm conversations started | 2 | 1 |
+| Dormant threads revived | 1 | 3 |
+
+Includes: top-performing message this week (the one with the highest reply rate), and one-line interpretation ("Acceptance rate improved — the targeting is getting sharper").
+
+### 12.2 Monthly ROI Report *(first day of each month)*
+
+Answers the question: is this actually working?
+
+- Total actions taken by the agent
+- Conversations that progressed past the first message
+- Outcomes logged by owner (meeting booked, job application submitted, deal opened)
+- Estimated time saved vs. doing this manually (based on avg. 8 min per manual outreach)
+- Style model accuracy trend: are edits getting smaller and less frequent over time?
+
+Owner logs outcomes manually via a simple Telegram command: `/outcome "met with James, call scheduled"`. These feed the ROI report.
+
+### 12.3 Job Market Pulse *(job seeker mode — every Friday)*
+
+A weekly radar of the hiring market in the owner's target roles:
+
+- Companies actively posting roles this week (with headcount and urgency scores)
+- New companies that appeared in the radar for the first time
+- Companies that stopped posting (potential freeze — avoid)
+- One "opportunity of the week": the single highest-fit, highest-urgency listing right now
+
+### 12.4 Network Health Report *(monthly, same day as ROI report)*
+
+The full temperature picture of the owner's network:
+
+- Temperature breakdown: X hot, Y warm, Z cold (with trend vs last month)
+- Who went cold this month (was warm, now cold — potential re-engagement)
+- Who is warming up (cold last month, engaged this month)
+- Top 5 connections to prioritize this week based on current temperature and relevance
+- Any connections who changed jobs or got promoted that haven't been acknowledged yet
+
+---
+
+## 13. Scope Gaps Addressed
+
+### 13.1 Multi-Target Support
+
+The agent supports defining up to **two active target profiles simultaneously**:
+
+- A job seeker can target two different role types (e.g., "Product Manager" and "Founding PM at a startup") with separate prospect pools and job listing filters
+- A business owner can target two different ICPs (e.g., "Series A SaaS founders" and "HR Directors at mid-size companies")
+
+Each target has its own scoring weights and message context. Drafts always disclose which target they were generated for.
+
+### 13.2 Exports and Integrations
+
+**CSV export:** The activity log, contact list, and job listings board are exportable as CSV at any time via the web UI.
+
+**Google Sheets sync *(optional)*:** For business owners who manage pipeline in Sheets, the agent can write contact status updates (name, company, temperature, last contact date, next action) to a designated spreadsheet on a daily schedule.
+
+**No CRM integration in v1.** This is out of scope until the core loop is validated.
+
+---
+
+## 14. What Success Looks Like at 90 Days
 
 At 90 days, the agent has been running for roughly 12 weeks across Phases 1 through 5. The owner has approved several hundred connection requests and messages without writing most of them from scratch. Their response rate is somewhere in the 4–7% range — normal, and tracked honestly against benchmarks so they know it. The drafts sound like them, not like a tool, and the edit-pair feedback loop has tightened the style model to the point where most drafts need only minor adjustments before approval. No LinkedIn warnings have been received. The morning briefing takes less than a minute to read. The owner knows who is warm, who needs a follow-up, and who to prioritize this week — without logging into LinkedIn to figure it out. The tool has not replaced their judgment; it has made their judgment cheaper to exercise.
 
