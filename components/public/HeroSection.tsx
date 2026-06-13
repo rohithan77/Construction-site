@@ -17,7 +17,7 @@ function HouseSVG({ svgRef }: { svgRef: React.Ref<SVGSVGElement> }) {
       ref={svgRef}
       viewBox="0 0 900 520"
       fill="none"
-      stroke="var(--color-accent-primary)"
+      stroke="#B5694A"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -128,21 +128,22 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-text/25" />
         </div>
 
-        {/* SVG drawing */}
+        {/* SVG drawing — top 60% on mobile, full center on desktop */}
         <div
           ref={svgWrapRef}
-          className="absolute inset-0 flex items-center justify-center px-8 sm:px-16 lg:px-28"
-          style={{ paddingTop: "70px", paddingBottom: "180px" }}
+          className="absolute inset-x-0 top-[70px] flex items-center justify-center px-6 sm:px-16 lg:px-28"
+          style={{ bottom: "42%" }}
         >
           <div className="w-full max-w-4xl">
             <HouseSVG svgRef={svgRef} />
           </div>
         </div>
 
-        {/* Headline overlay */}
+        {/* Headline overlay — bottom 44%, never overlaps SVG */}
         <div
           ref={headlineRef}
-          className="absolute inset-0 flex flex-col justify-end pb-16 sm:pb-20 px-8 sm:px-14 lg:px-20 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 flex flex-col justify-end pb-10 sm:pb-16 lg:pb-20 px-8 sm:px-14 lg:px-20 pointer-events-none"
+          style={{ top: "56%" }}
         >
           <div className="pointer-events-auto max-w-2xl">
             <motion.div

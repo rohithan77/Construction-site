@@ -164,7 +164,7 @@ export default function ProcessSection() {
               <motion.div
                 animate={{
                   height: i === active ? 42 : 14,
-                  backgroundColor: i <= active ? "var(--color-accent-primary)" : "rgba(28,27,25,0.12)",
+                  backgroundColor: i <= active ? "#B5694A" : "rgba(28,27,25,0.12)",
                 }}
                 transition={{ duration: 0.35 }}
                 className="w-[2px] rounded-full"
@@ -188,7 +188,7 @@ export default function ProcessSection() {
                   animate={{
                     width: i === active ? 28 : i < active ? 14 : 8,
                     backgroundColor:
-                      i === active ? "var(--color-accent-primary)" : i < active ? "rgba(181,105,74,0.38)" : "rgba(28,27,25,0.12)",
+                      i === active ? "#B5694A" : i < active ? "rgba(181,105,74,0.38)" : "rgba(28,27,25,0.12)",
                   }}
                   transition={{ duration: 0.35 }}
                   className="h-[2px] rounded-full"
