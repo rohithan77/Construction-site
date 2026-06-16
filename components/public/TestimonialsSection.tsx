@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Star } from "lucide-react";
+import { motion } from "framer-motion";
 import { Testimonial } from "@/types";
 
 const FALLBACK: Testimonial[] = [
@@ -44,103 +42,73 @@ const FALLBACK: Testimonial[] = [
   },
 ];
 
-export default function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
-  const items = testimonials.length > 0 ? testimonials : FALLBACK;
-  const [current, setCurrent] = useState(0);
-
-  const t = items[current];
+export default function TestimonialsSection({
+  testimonials,
+}: {
+  testimonials: Testimonial[];
+}) {
+  const items = testimonials.length > 0 ? testimonials.slice(0, 3) : FALLBACK;
 
   return (
-    <section className="relative bg-surface py-28 lg:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Decorative quote — contained by relative+overflow-hidden */}
-      <div
-        className="absolute font-display font-black leading-none text-text/[0.04] select-none pointer-events-none"
-        style={{ fontSize: "clamp(8rem,22vw,18rem)", top: "0", left: "1rem" }}
-        aria-hidden
-      >
-        &ldquo;
-      </div>
+    <section className="bg-surface py-28 lg:py-40 px-6 sm:px-10 lg:px-16 overflow-hidden">
+      <div className="max-w-[1440px] mx-auto">
 
-      <div className="relative z-10 max-w-5xl mx-auto">
-        {/* Header */}
+        {/* Section label — left-aligned, not centered */}
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-3 mb-16 lg:mb-20"
         >
-          <motion.div
-            variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22,1,0.36,1] } } }}
-            className="flex items-center justify-center gap-3 mb-5"
-          >
-            <span className="w-8 h-px bg-text/20" />
-            <span className="text-text/40 text-[11px] font-semibold uppercase tracking-[0.4em]">Client Stories</span>
-            <span className="w-8 h-px bg-text/20" />
-          </motion.div>
-          <motion.h2
-            variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22,1,0.36,1] } } }}
-            className="font-display font-black text-[clamp(2.4rem,5vw,4rem)] text-text leading-[0.95] tracking-[-0.03em]"
-          >
-            What our clients{" "}
-            <em className="text-accent-primary not-italic">say</em>
-          </motion.h2>
+          <span className="w-8 h-px bg-text/20" />
+          <span className="text-text/35 text-[10px] font-semibold uppercase tracking-[0.42em]">
+            Client voices
+          </span>
         </motion.div>
 
-        {/* Slider */}
-        <div className="relative min-h-[260px] flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current}
-              initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center w-full"
+        {/* Editorial testimonial columns — no carousel, no cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:divide-x divide-text/[0.08]">
+          {items.map((t, i) => (
+            <motion.article
+              key={t.id}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{
+                duration: 0.75,
+                delay: i * 0.1,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="lg:px-10 first:lg:pl-0 last:lg:pr-0 pb-12 lg:pb-0 border-b lg:border-b-0 border-text/[0.08] last:border-b-0"
             >
-              {/* Stars */}
-              <div className="flex justify-center gap-1 mb-8">
-                {Array.from({ length: t.rating ?? 5 }).map((_, i) => (
-                  <Star key={i} size={14} className="text-accent-primary fill-accent-primary" />
-                ))}
+              {/* Large decorative number */}
+              <div
+                className="font-display font-black text-text/[0.04] leading-none select-none mb-4"
+                style={{ fontSize: "clamp(4rem, 8vw, 6rem)" }}
+                aria-hidden
+              >
+                0{i + 1}
               </div>
 
-              {/* Quote */}
-              <blockquote className="font-display font-light italic text-[clamp(1.3rem,2.5vw,1.95rem)] text-text/72 leading-[1.5] mb-10 max-w-3xl mx-auto tracking-[-0.01em]">
+              <blockquote className="font-display font-light text-[clamp(1.1rem,1.8vw,1.35rem)] text-text/72 leading-[1.55] tracking-[-0.01em] mb-8 text-pretty">
                 &ldquo;{t.text}&rdquo;
               </blockquote>
 
-              {/* Author */}
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-[1.5px] bg-accent-primary mb-1" />
-                <span className="text-text font-semibold text-sm">{t.name}</span>
-                {(t.role || t.company) && (
-                  <span className="text-text/35 text-xs tracking-wide">
-                    {[t.role, t.company].filter(Boolean).join(" · ")}
-                  </span>
-                )}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              <footer className="flex items-start gap-4">
+                <div className="w-6 h-px bg-accent-primary mt-3 shrink-0" />
+                <div>
+                  <p className="text-text font-semibold text-sm">{t.name}</p>
+                  {(t.role || t.company) && (
+                    <p className="text-text/35 text-xs mt-0.5 tracking-wide">
+                      {[t.role, t.company].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                </div>
+              </footer>
+            </motion.article>
+          ))}
         </div>
-
-        {/* Dot navigation */}
-        {items.length > 1 && (
-          <div className="flex justify-center gap-2.5 mt-10">
-            {items.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`transition-all duration-300 ${
-                  i === current
-                    ? "w-7 h-[3px] bg-accent-primary"
-                    : "w-[6px] h-[6px] rounded-full bg-text/18 hover:bg-text/35"
-                }`}
-                aria-label={`Testimonial ${i + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

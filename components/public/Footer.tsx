@@ -1,130 +1,96 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Instagram, Facebook, Linkedin } from "lucide-react";
-
-const SERVICES = [
-  "New Home Builds",
-  "Duplexes & Dual Occ.",
-  "Knockdown Rebuilds",
-  "Granny Flats",
-  "Multi-Dwelling",
-  "Subdivisions",
-];
 
 const LINKS = [
-  { label: "About Us", href: "/about" },
-  { label: "Our Projects", href: "/projects" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
-  { label: "Our Process", href: "/process" },
-  { label: "Contact", href: "/contact" },
+  { label: "About", href: "/about" },
+  { label: "Privacy", href: "#" },
+  { label: "Terms", href: "#" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[#1C1B19] text-[#F7F4ED]/60">
-      {/* Top accent */}
-      <div className="h-[2px] bg-gradient-to-r from-transparent via-accent-primary/60 to-transparent" />
+    <footer className="bg-[#1C1B19] overflow-hidden">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 pt-20 lg:pt-28 pb-10">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 py-16 lg:py-20">
+        {/* Main editorial block */}
+        <div className="flex flex-col lg:flex-row lg:items-end gap-14 lg:gap-20 pb-16 border-b border-[#F7F4ED]/[0.06]">
 
-          {/* Brand */}
-          <div>
-            <Link href="/" className="group inline-block mb-6">
-              <div className="font-display font-black text-xl text-bg group-hover:text-accent-primary transition-colors duration-300 tracking-[-0.03em] leading-none">
-                Build Demo
-              </div>
-              <div className="text-accent-secondary text-[9px] font-semibold uppercase tracking-[0.4em] mt-1">
-                Construction
-              </div>
-            </Link>
-            <p className="text-bg/30 text-sm leading-relaxed mb-6 max-w-[210px]">
-              Greater Sydney&apos;s residential construction specialists since 2016.
+          {/* Large typographic CTA */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[#F7F4ED]/22 text-[10px] font-semibold uppercase tracking-[0.45em] mb-7">
+              Ready to begin
             </p>
-            <div className="flex gap-3">
-              {[
-                { Icon: Instagram, label: "Instagram" },
-                { Icon: Facebook, label: "Facebook" },
-                { Icon: Linkedin, label: "LinkedIn" },
-              ].map(({ Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="w-8 h-8 border border-bg/10 hover:border-accent-primary/50 flex items-center justify-center text-bg/25 hover:text-accent-primary transition-all duration-300"
-                >
-                  <Icon size={13} />
-                </a>
-              ))}
+            <h2
+              className="font-display font-black text-[#F7F4ED] leading-[0.87] tracking-[-0.04em] text-wrap-balance"
+              style={{ fontSize: "clamp(3.2rem, 8.5vw, 7.5rem)" }}
+            >
+              Let&apos;s build<br />
+              something<br />
+              <span className="text-accent-primary">worth keeping.</span>
+            </h2>
+
+            <div className="mt-10">
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-3 border border-[#F7F4ED]/18 hover:border-accent-primary text-[#F7F4ED]/60 hover:text-accent-primary text-[12px] font-bold uppercase tracking-[0.22em] px-8 py-4 transition-all duration-300"
+              >
+                Start a Conversation
+                <span className="text-lg leading-none">→</span>
+              </Link>
             </div>
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="text-bg/45 text-[10px] font-bold uppercase tracking-[0.3em] mb-6">Services</h4>
-            <ul className="space-y-3">
-              {SERVICES.map((s) => (
-                <li key={s}>
-                  <Link href="/services" className="text-bg/28 hover:text-accent-primary text-sm transition-colors duration-200">
-                    {s}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Contact details column */}
+          <div className="lg:max-w-[280px] space-y-9 shrink-0">
+            <div>
+              <p className="text-[#F7F4ED]/22 text-[10px] font-semibold uppercase tracking-[0.35em] mb-2.5">Call</p>
+              <a
+                href="tel:+61212345678"
+                className="text-[#F7F4ED]/65 hover:text-accent-primary text-[1.25rem] font-semibold tracking-[-0.01em] transition-colors duration-200"
+              >
+                (02) 1234 5678
+              </a>
+            </div>
 
-          {/* Links */}
-          <div>
-            <h4 className="text-bg/45 text-[10px] font-bold uppercase tracking-[0.3em] mb-6">Quick Links</h4>
-            <ul className="space-y-3">
-              {LINKS.map(({ label, href }) => (
-                <li key={label}>
-                  <Link href={href} className="text-bg/28 hover:text-accent-primary text-sm transition-colors duration-200">
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <p className="text-[#F7F4ED]/22 text-[10px] font-semibold uppercase tracking-[0.35em] mb-2.5">Email</p>
+              <a
+                href="mailto:hello@builddemo.com.au"
+                className="text-[#F7F4ED]/50 hover:text-accent-primary text-sm transition-colors duration-200"
+              >
+                hello@builddemo.com.au
+              </a>
+            </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="text-bg/45 text-[10px] font-bold uppercase tracking-[0.3em] mb-6">Get in Touch</h4>
-            <ul className="space-y-4">
-              <li>
-                <a href="tel:+6102123456789" className="flex items-start gap-3 text-bg/28 hover:text-accent-primary transition-colors text-sm group">
-                  <Phone size={13} className="mt-0.5 shrink-0" />
-                  (02) 1234 5678
-                </a>
-              </li>
-              <li>
-                <a href="mailto:hello@builddemo.com.au" className="flex items-start gap-3 text-bg/28 hover:text-accent-primary transition-colors text-sm group">
-                  <Mail size={13} className="mt-0.5 shrink-0" />
-                  hello@builddemo.com.au
-                </a>
-              </li>
-              <li>
-                <div className="flex items-start gap-3 text-bg/28 text-sm">
-                  <MapPin size={13} className="mt-0.5 shrink-0" />
-                  <span>Level 4, 100 Harris Street<br />Pyrmont NSW 2009</span>
-                </div>
-              </li>
-            </ul>
-            <div className="mt-8">
-              <Link href="/contact" className="inline-block bg-accent-primary hover:bg-accent-primary/85 text-white text-xs font-bold uppercase tracking-widest px-5 py-3 transition-all duration-300">
-                Get a Quote
-              </Link>
+            <div>
+              <p className="text-[#F7F4ED]/22 text-[10px] font-semibold uppercase tracking-[0.35em] mb-2.5">Office</p>
+              <p className="text-[#F7F4ED]/40 text-sm leading-relaxed">
+                Level 4, 100 Harris Street<br />
+                Pyrmont NSW 2009
+              </p>
+            </div>
+
+            <div>
+              <p className="text-[#F7F4ED]/22 text-[10px] font-semibold uppercase tracking-[0.35em] mb-2.5">Licence</p>
+              <p className="text-[#F7F4ED]/30 text-xs">NSW Builder Lic. #123456</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-bg/[0.06] py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-bg/18 text-xs">
-            © {new Date().getFullYear()} Build Demo Pty Ltd. All rights reserved. NSW Builder Licence #123456.
+        {/* Bottom bar */}
+        <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <p className="text-[#F7F4ED]/18 text-xs">
+            © {new Date().getFullYear()} Build Demo Pty Ltd. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            {["Privacy Policy", "Terms of Service"].map((item) => (
-              <Link key={item} href="#" className="text-bg/18 hover:text-bg/45 text-xs transition-colors">
-                {item}
+          <div className="flex flex-wrap gap-5">
+            {LINKS.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="text-[#F7F4ED]/18 hover:text-[#F7F4ED]/45 text-xs transition-colors duration-200"
+              >
+                {label}
               </Link>
             ))}
           </div>

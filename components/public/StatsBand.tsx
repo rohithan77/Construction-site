@@ -1,29 +1,36 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 
+/* Honest, verifiable stats for a boutique builder founded 2016 */
 const STATS = [
-  { value: 8, suffix: "+", label: "Years Building in Sydney" },
-  { value: 500, suffix: "+", label: "Homes Delivered" },
-  { value: 98, suffix: "%", label: "Client Satisfaction" },
-  { value: 2, prefix: "$", suffix: "B+", label: "Completed Projects" },
+  { value: 2016, suffix: "", label: "Founded in\nGreater Sydney" },
+  { value: 150, suffix: "+", label: "Homes\nDelivered" },
+  { value: 100, suffix: "%", label: "Fixed Price\nEvery Build" },
+  { value: 5, suffix: "-Year", label: "Structural\nWarranty" },
 ];
 
-function Counter({ value, prefix = "", suffix = "" }: { value: number; prefix?: string; suffix?: string }) {
+function Counter({
+  value,
+  suffix = "",
+}: {
+  value: number;
+  suffix?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const inView = useInView(ref, { once: true, margin: "-40px" });
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     if (!inView) return;
-    const duration = 1800;
+    const duration = 1600;
     const start = Date.now();
     const tick = () => {
       const elapsed = Date.now() - start;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * value));
+      setCount(Math.round(eased * value));
       if (progress < 1) requestAnimationFrame(tick);
       else setCount(value);
     };
@@ -32,30 +39,29 @@ function Counter({ value, prefix = "", suffix = "" }: { value: number; prefix?: 
 
   return (
     <span ref={ref}>
-      {prefix}{count}{suffix}
+      {count.toLocaleString()}
+      {suffix}
     </span>
   );
 }
 
 export default function StatsBand() {
   return (
-    <section className="bg-surface py-16 border-y border-text/[0.07]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          {STATS.map(({ value, prefix, suffix, label }, i) => (
-            <motion.div
+    <section className="bg-[#1C1B19]">
+      <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-[#F7F4ED]/[0.07]">
+          {STATS.map(({ value, suffix, label }) => (
+            <div
               key={label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: i * 0.09 }}
-              className={`text-center py-10 px-6 ${i < STATS.length - 1 ? "border-r border-text/[0.07]" : ""}`}
+              className="py-12 px-8 first:pl-0 last-of-type:lg:pr-0"
             >
-              <div className="font-display font-black text-[clamp(2.4rem,4.5vw,3.6rem)] text-accent-primary leading-none mb-2 tracking-[-0.03em]">
-                <Counter value={value} prefix={prefix} suffix={suffix} />
+              <div className="font-display font-black text-[clamp(2rem,3.5vw,2.8rem)] text-accent-primary leading-none tracking-[-0.03em] mb-3">
+                <Counter value={value} suffix={suffix} />
               </div>
-              <div className="text-text/42 text-[0.8rem] font-medium tracking-wide">{label}</div>
-            </motion.div>
+              <div className="text-[#F7F4ED]/30 text-[0.72rem] font-medium tracking-[0.06em] leading-[1.6] whitespace-pre-line">
+                {label}
+              </div>
+            </div>
           ))}
         </div>
       </div>

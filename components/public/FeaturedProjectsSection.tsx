@@ -117,44 +117,40 @@ export default function FeaturedProjectsSection({ projects }: { projects: Projec
       : PLACEHOLDERS;
 
   return (
-    <section className="bg-bg py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
-      {/* Header */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
-        className="max-w-7xl mx-auto mb-12"
-      >
-        <motion.div variants={blurUp} className="flex items-center gap-3 mb-5">
-          <span className="w-8 h-px bg-accent-secondary" />
-          <span className="text-accent-secondary text-[11px] font-semibold uppercase tracking-[0.42em]">
-            Recent Work
-          </span>
-        </motion.div>
+    <section className="bg-bg py-24 lg:py-32 px-6 sm:px-10 lg:px-16">
+      {/* Header — no eyebrow, editorial split */}
+      <div className="max-w-[1440px] mx-auto mb-12">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
           <motion.h2
-            variants={blurUp}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
             className="font-display font-black text-[clamp(2rem,5vw,3.8rem)] text-text leading-[0.95] tracking-[-0.03em]"
           >
-            Projects we&apos;re{" "}
-            <em className="text-accent-primary not-italic">proud of</em>
+            Work we&apos;re{" "}
+            <span className="text-accent-primary">proud of.</span>
           </motion.h2>
-          <motion.div variants={blurUp}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <Link
               href="/projects"
-              className="text-text/40 hover:text-accent-primary text-sm font-semibold flex items-center gap-1.5 transition-colors duration-200 shrink-0"
+              className="text-text/35 hover:text-accent-primary text-sm font-semibold flex items-center gap-1.5 transition-colors duration-200 shrink-0"
             >
               All projects →
             </Link>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Grid with custom cursor */}
       <div
         ref={containerRef}
-        className="relative max-w-7xl mx-auto"
+        className="relative max-w-[1440px] mx-auto"
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
