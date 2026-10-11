@@ -64,36 +64,99 @@ def text_path(text, path, size, variations=None, tracking=0.0, features=None):
 
 
 # ── the mark ────────────────────────────────────────────────────────────────
-# Above the ground line: the arch (home / doorway / sanctum niche) and the leaf-flame
-# (seed, life, the lamp lit inside), split by a sliver of light.
-# Below: the same forms again in fine line, the foundation and the root. Together
-# the silhouette closes into a seed.
-MARK_VIEW = (40, 34, 120, 142)  # x, y, w, h
+# A house standing in front of a rising sun, its roots spreading into the earth below
+# the horizon. The doorway is a glowing leaf / lamp flame: the life lived inside.
+import math
 
 
+def _bez(p0, p1, p2, p3, n=40):
+    out = []
+    for i in range(n + 1):
+        t = i / n
+        a, b, c, d = (1 - t) ** 3, 3 * (1 - t) ** 2 * t, 3 * (1 - t) * t * t, t ** 3
+        out.append((a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0], a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1]))
+    return out
+
+
+def _taper(pts, w0, w1):
+    L, R = [], []
+    n = len(pts)
+    for i, (x, y) in enumerate(pts):
+        a, b = pts[max(i - 1, 0)], pts[min(i + 1, n - 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        l = math.hypot(dx, dy) or 1
+        nx, ny = -dy / l, dx / l
+        w = (w0 + (w1 - w0) * (i / (n - 1)) ** 0.8) / 2
+        L.append((x + nx * w, y + ny * w))
+        R.append((x - nx * w, y - ny * w))
+    return "M" + " L".join(f"{x:.2f} {y:.2f}" for x, y in L + R[::-1]) + "Z"
+
+
+def _branch(parent, t, d):
+    x, y = _bez(*parent, n=200)[int(t * 200)]
+    return ((x, y), (x + d[0][0], y + d[0][1]), (x + d[1][0], y + d[1][1]), (x + d[2][0], y + d[2][1]))
+
+
+def _mirror(b):
+    return tuple((200 - x, y) for x, y in b)
+
+
+_P = ((100, 112), (86, 116), (68, 128), (52, 152))   # primary: sweeps down-out, echoing the roof pitch
+_S = ((100, 113), (93, 124), (86, 142), (84, 170))   # secondary: steeper
+_H = ((99, 112), (86, 113), (68, 114), (44, 121))    # shallow surface root
+_T = ((100, 111), (101, 132), (98, 154), (100, 182))  # taproot
+_ROOTS = [(_T, 7.5, 1.2)]
+for _b, _w0, _w1 in [
+    (_P, 6.2, 1.0), (_S, 4.6, 0.9), (_H, 3.4, 0.7),
+    (_branch(_P, 0.55, ((-8, 1), (-14, 6), (-20, 16))), 2.6, 0.6),
+    (_branch(_S, 0.6, ((-5, 4), (-10, 10), (-12, 18))), 2.0, 0.5),
+    (_branch(_H, 0.6, ((-4, 5), (-8, 9), (-14, 12))), 1.8, 0.5),
+]:
+    _ROOTS += [(_b, _w0, _w1), (_mirror(_b), _w0, _w1)]
+ROOTS_D = " ".join(_taper(_bez(*b), w0, w1) for b, w0, w1 in _ROOTS)
+HOUSE_D = "M58 92 L100 55 L142 92 L132 92 L132 111 L68 111 L68 92 Z"
+LEAF_D = "M100 111 C88 102 89 91 100 82 C111 91 112 102 100 111Z"
+MARK_VIEW = (14, 14, 172, 172)  # x, y, w, h
 _uid = [0]
 
 
-def mark(stroke=INK, accent=TERRA, slit=None, fine=None, simple=False):
-    """`slit` is unused: the sliver of light is cut out with a mask so it works on any background."""
-    fine = fine or accent
+def mark(variant="color"):
+    """variant: color | dark | flat | mono"""
     _uid[0] += 1
-    m = f"rr-light-{_uid[0]}"
-    sw, top = (4, 72) if simple else (2, 75)
-    base = 122 if simple else 118
-    cut = (f'<mask id="{m}" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">'
-           f'<rect width="200" height="200" fill="#fff"/><path d="M100 {base + 1} V{top}" stroke="#000" stroke-width="{sw}"/></mask>')
-    if simple:  # favicon / small sizes: heavier, no fine line
-        return f"""
-  <path d="M60 122 V80 A40 40 0 0 1 140 80 V122" fill="none" stroke="{stroke}" stroke-width="12"/>
-  {cut}<path d="M100 50 C118 70 121 101 100 122 C79 101 82 70 100 50Z" fill="{accent}" mask="url(#{m})"/>
-  <path d="M42 122 H158" stroke="{stroke}" stroke-width="6"/>"""
+    u = f"rr{_uid[0]}"
+    mono = variant == "mono"
+    dark = variant == "dark"
+    flat = variant in ("flat", "mono")
+    sky = "none" if mono else (INK if dark else CREAM)
+    ring = CREAM if dark else INK
+    earth = INK if not dark else "#2a2420"
+    sun = INK if mono else (TERRA if flat else f"url(#{u}s)")
+    roots = CREAM if mono else (TERRA_LIT if flat else f"url(#{u}r)")
+    house = CREAM if (dark or mono) else INK
+    leaf = INK if mono else ("#F2C38B" if flat else f"url(#{u}g)")
+    wick = CREAM if mono else TERRA
+    rings = "" if mono else (
+        f'<circle cx="100" cy="111" r="69" fill="none" stroke="{TERRA}" stroke-width="1.2" opacity="0.55"/>'
+        f'<circle cx="100" cy="111" r="77" fill="none" stroke="{TERRA}" stroke-width="1" opacity="0.3"/>')
+    glow = "" if flat else f'<ellipse cx="100" cy="112" rx="46" ry="22" fill="url(#{u}h)"/>'
     return f"""
-  <path d="M64 118 V78 A36 36 0 0 1 136 78 V118" fill="none" stroke="{stroke}" stroke-width="7"/>
-  <path d="M64 118 V132 A36 36 0 0 0 136 132 V118" fill="none" stroke="{fine}" stroke-width="2"/>
-  {cut}<path d="M100 55 C114.5 72 117.5 99 100 118 C82.5 99 85.5 72 100 55Z" fill="{accent}" mask="url(#{m})"/>
-  <path d="M100 118 C109 128 111 142 100 154 C89 142 91 128 100 118Z M100 118 V168" fill="none" stroke="{fine}" stroke-width="2"/>
-  <path d="M44 118 H156" stroke="{stroke}" stroke-width="2.5"/>"""
+  <defs>
+    <clipPath id="{u}c"><circle cx="100" cy="100" r="84"/></clipPath>
+    <radialGradient id="{u}s" cx="100" cy="112" r="62" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F2B98C"/><stop offset="0.55" stop-color="#D9875F"/><stop offset="1" stop-color="#B5694A"/></radialGradient>
+    <linearGradient id="{u}r" x1="0" y1="110" x2="0" y2="182" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F6CD96"/><stop offset="1" stop-color="#B5694A"/></linearGradient>
+    <radialGradient id="{u}g" cx="100" cy="104" r="16" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF6E4"/><stop offset="1" stop-color="#F2B66F"/></radialGradient>
+    <radialGradient id="{u}h" cx="100" cy="112" r="46" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#E9A36F" stop-opacity="0.38"/><stop offset="1" stop-color="#E9A36F" stop-opacity="0"/></radialGradient>
+  </defs>
+  <g clip-path="url(#{u}c)">
+    <rect x="0" y="0" width="200" height="111" fill="{sky}"/>
+    <circle cx="100" cy="111" r="60" fill="{sun}"/>{rings}
+    <rect x="0" y="111" width="200" height="100" fill="{earth}"/>{glow}
+    <path d="{ROOTS_D}" fill="{roots}"/>
+  </g>
+  <path d="{HOUSE_D}" fill="{house}"/>
+  <path d="{LEAF_D}" fill="{leaf}"/>
+  <path d="M100 110 V97" stroke="{wick}" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="100" cy="100" r="84" fill="none" stroke="{ring}" stroke-width="3"/>"""
 
 
 def svg(w, h, body, bg=None, view=None):
@@ -128,8 +191,8 @@ def wordmark(ink, accent, sub):
     return body, total, sy + 2
 
 
-def lockup_horizontal(ink, accent, fine, sub, slit, bg=None):
-    mh = 120  # rendered mark height
+def lockup_horizontal(ink, accent, sub, variant="color", bg=None):
+    mh = 136  # rendered mark height
     k = mh / MARK_VIEW[3]
     mw = MARK_VIEW[2] * k
     wb, ww, wh = wordmark(ink, accent, sub)
@@ -138,13 +201,13 @@ def lockup_horizontal(ink, accent, fine, sub, slit, bg=None):
     H = mh + pad * 2
     wy = pad + (mh - wh) / 2 - 6
     body = (f'<g transform="translate({pad} {pad}) scale({k:.4f}) translate({-MARK_VIEW[0]} {-MARK_VIEW[1]})">'
-            f"{mark(ink, accent, slit, fine)}</g>"
+            f"{mark(variant)}</g>"
             f'<g transform="translate({pad + gx:.2f} {wy:.2f})">{wb}</g>')
     W = pad + gx + ww + pad
     return svg(W, H, body, bg)
 
 
-def lockup_stacked(ink, accent, fine, sub, slit, bg=None):
+def lockup_stacked(ink, accent, sub, variant="color", bg=None):
     mh = 150
     k = mh / MARK_VIEW[3]
     mw = MARK_VIEW[2] * k
@@ -152,7 +215,7 @@ def lockup_stacked(ink, accent, fine, sub, slit, bg=None):
     pad = 32
     W = max(mw, ww) + pad * 2
     body = (f'<g transform="translate({(W - mw) / 2:.2f} {pad}) scale({k:.4f}) translate({-MARK_VIEW[0]} {-MARK_VIEW[1]})">'
-            f"{mark(ink, accent, slit, fine)}</g>"
+            f"{mark(variant)}</g>"
             f'<g transform="translate({(W - ww) / 2:.2f} {pad + mh + 26:.2f})">{wb}</g>')
     return svg(W, pad + mh + 26 + wh + pad, body, bg)
 
@@ -165,11 +228,12 @@ def write(name, content):
 
 if __name__ == "__main__":
     vw = MARK_VIEW
-    write("mark.svg", svg(vw[2] * 4, vw[3] * 4, mark(), view=vw))
-    write("mark-reversed.svg", svg(vw[2] * 4, vw[3] * 4, mark(CREAM, TERRA_LIT, INK), bg=INK, view=vw))
-    write("mark-mono.svg", svg(vw[2] * 4, vw[3] * 4, mark(INK, INK, CREAM), view=vw))
-    write("favicon.svg", svg(64, 64, mark(INK, TERRA, CREAM, simple=True), bg=CREAM, view=(30, 26, 140, 140)))
-    write("logo-horizontal.svg", lockup_horizontal(INK, TERRA, TERRA, SAGE, CREAM))
-    write("logo-horizontal-reversed.svg", lockup_horizontal(CREAM, TERRA_LIT, TERRA_LIT, "#B9C2A8", INK, bg=INK))
-    write("logo-stacked.svg", lockup_stacked(INK, TERRA, TERRA, SAGE, CREAM))
-    write("logo-stacked-reversed.svg", lockup_stacked(CREAM, TERRA_LIT, TERRA_LIT, "#B9C2A8", INK, bg=INK))
+    write("mark.svg", svg(vw[2] * 3, vw[3] * 3, mark("color"), view=vw))
+    write("mark-reversed.svg", svg(vw[2] * 3, vw[3] * 3, mark("dark"), bg=INK, view=vw))
+    write("mark-flat.svg", svg(vw[2] * 3, vw[3] * 3, mark("flat"), view=vw))
+    write("mark-mono.svg", svg(vw[2] * 3, vw[3] * 3, mark("mono"), view=vw))
+    write("favicon.svg", svg(64, 64, mark("flat"), view=vw))
+    write("logo-horizontal.svg", lockup_horizontal(INK, TERRA, SAGE))
+    write("logo-horizontal-reversed.svg", lockup_horizontal(CREAM, TERRA_LIT, "#B9C2A8", "dark", bg=INK))
+    write("logo-stacked.svg", lockup_stacked(INK, TERRA, SAGE))
+    write("logo-stacked-reversed.svg", lockup_stacked(CREAM, TERRA_LIT, "#B9C2A8", "dark", bg=INK))

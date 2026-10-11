@@ -22,10 +22,10 @@
   .hero .logo img { width: 74%; }
 
   /* anatomy */
-  .anatomy { background: var(--surface); display: grid; grid-template-columns: 560px 1fr; gap: 80px; align-items: center; }
-  .diagram { position: relative; width: 560px; height: 640px; }
-  .diagram img { position: absolute; left: 70px; top: 30px; width: 420px; }
-  .tag { position: absolute; font-size: 13px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--terra); white-space: nowrap; }
+  .anatomy { background: var(--surface); display: grid; grid-template-columns: 640px 1fr; gap: 50px; align-items: center; }
+  .diagram { position: relative; width: 640px; height: 470px; }
+  .diagram img { position: absolute; left: 150px; top: 60px; width: 340px; }
+  .tag { position: absolute; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--terra); white-space: nowrap; }
   .tag::before { content: ""; position: absolute; top: 50%; width: var(--w, 40px); height: 1px; background: var(--terra); }
   .tag.r::before { right: calc(100% + 10px); } .tag.l::before { left: calc(100% + 10px); }
   .meanings { display: grid; gap: 30px; }
@@ -72,8 +72,8 @@
   <section class="hero">
     <div>
       <div class="eyebrow">Identity · Root &amp; Rise Constructions</div>
-      <h1>A seed, a sanctum,<br/>and the <em>light</em> inside it.</h1>
-      <p class="lede">Every home you build starts as an idea on bare land and ends as the one place a family lives in every hour of the day. The mark holds that whole journey in one shape: what rises above the ground stands on what was planned, with the same care, beneath it.</p>
+      <h1>A home that <em>rises</em><br/>from deep roots.</h1>
+      <p class="lede">You can read it in one glance: a house, a rising sun, roots. Look a moment longer and the doorway turns out to be a glowing leaf, like a lamp lit inside. Nature, light, and a home treated as something sacred, held in one circle.</p>
     </div>
     <div class="logo"><img src="logo-stacked.svg" alt="Root &amp; Rise stacked logo" /></div>
   </section>
@@ -81,26 +81,25 @@
   <section class="anatomy">
     <div class="diagram">
       <img src="mark.svg" alt="" />
-      <div class="tag l" style="left:-4px; top:218px">The arch</div>
-      <div class="tag r" style="left:446px; top:204px; --w:112px">The leaf-flame</div>
-      <div class="tag r" style="left:446px; top:282px; --w:150px">The sliver of light</div>
-      <div class="tag l" style="left:-96px; top:316px">The ground line</div>
-      <div class="tag r" style="left:446px; top:379px; --w:116px">The root</div>
-      <div class="tag l" style="left:-4px; top:470px">The foundation</div>
+      <div class="tag l" style="right:500px; top:206px; --w:91px">The home</div>
+      <div class="tag r" style="left:498px; top:147px; --w:69px">The rising sun</div>
+      <div class="tag r" style="left:498px; top:214px; --w:156px">The lamp-leaf door</div>
+      <div class="tag l" style="right:510px; top:244px; --w:20px">The horizon</div>
+      <div class="tag l" style="right:500px; top:321px; --w:103px">The roots</div>
     </div>
     <div class="meanings">
       <div class="eyebrow">Reading the mark</div>
-      <div class="m"><div class="n">i</div><div><b>The whole shape is a seed</b><span>Arch above and curve below close into one seed, the idea every project begins as. Turn it on its side and it still reads as one thing, because to you it is.</span></div></div>
-      <div class="m"><div class="n">ii</div><div><b>The arch: doorway, window, sanctum</b><span>It's the threshold of a home and the niche of a prayer room at once. That's the brief: a house treated with the care of a devotional space.</span></div></div>
-      <div class="m"><div class="n">iii</div><div><b>The leaf-flame: life and the lamp</b><span>Read it as a leaf for nature and the garden, or as the flame of a lamp lit inside. It shows life living in the house, not just walls.</span></div></div>
-      <div class="m"><div class="n">iv</div><div><b>The sliver of light</b><span>A single cut runs through it, where the sun enters. It stands for the windows, the stair and the orientation you plan around the light.</span></div></div>
-      <div class="m"><div class="n">v</div><div><b>Below the line, drawn in fine line</b><span>Everything above is echoed underneath: foundation under the arch, root under the leaf. The line is finer because it's unseen, but it's drawn with the same geometry because it matters just as much.</span></div></div>
+      <div class="m"><div class="n">i</div><div><b>The home</b><span>Simple and solid, the one shape everyone recognises. It's what you build.</span></div></div>
+      <div class="m"><div class="n">ii</div><div><b>The rising sun: the "Rise"</b><span>Growth, and the light you plan every room around: where the windows face and where the morning comes in.</span></div></div>
+      <div class="m"><div class="n">iii</div><div><b>The roots: the "Root"</b><span>Foundations engineered below ground, and the trees and garden you protect. As much of the mark lives underground as above it.</span></div></div>
+      <div class="m"><div class="n">iv</div><div><b>The lamp-leaf door</b><span>It glows like a lamp in a prayer room and grows like a new leaf. Life inside a home that's treated as sacred, and the roots spread from it.</span></div></div>
+      <div class="m"><div class="n">v</div><div><b>One circle</b><span>Sky, home and earth held together: a complete, customised whole, never a catalogue product.</span></div></div>
     </div>
   </section>
 
   <section class="principle">
     <h2>What rises is only ever as true as <em>what's rooted.</em></h2>
-    <p>The idea the mark is built on. Every other choice follows from it.</p>
+    <p>The idea the mark is built on, and the way every home is built.</p>
   </section>
 
   <section>
@@ -108,22 +107,22 @@
     <h2>Quiet enough for a business card, <em>strong enough for a site hoarding.</em></h2>
     <div class="apps">
       <div class="card" style="background:#D9D2C4"><div class="bc">
-        <img src="logo-horizontal.svg" style="width:300px; margin-left:-14px" alt="" />
+        <img src="logo-horizontal.svg" style="width:310px; margin-left:-14px" alt="" />
         <div style="display:flex; justify-content:space-between; align-items:flex-end">
           <div class="who"><b>Your Name</b><span>Founder &amp; Builder</span></div>
           <div class="contact" style="text-align:right">hello@rootandrise.com.au<br/>rootandrise.com.au</div>
         </div>
       </div></div>
-      <div class="card" style="background:#2b2925"><div class="bc back"><img src="mark-reversed.svg" style="width:110px" alt="" /></div></div>
+      <div class="card" style="background:#2b2925"><div class="bc back"><img src="mark-reversed.svg" style="width:150px" alt="" /></div></div>
       <div class="card" style="background:linear-gradient(#cfd8de, #efe6d6 70%, #8a7a5f 70%)">
         <div class="sign"><img src="logo-horizontal-reversed.svg" alt="" /><div class="line">Building here · Customised to you</div><div class="post a"></div><div class="post b"></div></div>
       </div>
       <div class="card" style="background:var(--surface); flex-direction:column; gap:40px">
         <div class="icons">
-          <div class="app"><img src="favicon.svg" alt="" /></div>
-          <div class="app dark"><img src="mark-reversed.svg" style="width:88%" alt="" /></div>
-          <img src="favicon.svg" style="width:48px; border-radius:10px" alt="" />
-          <img src="favicon.svg" style="width:24px; border-radius:5px" alt="" />
+          <div class="app"><img src="mark.svg" style="width:96%" alt="" /></div>
+          <div class="app dark"><img src="mark-reversed.svg" style="width:96%" alt="" /></div>
+          <img src="favicon.svg" style="width:48px" alt="" />
+          <img src="favicon.svg" style="width:24px" alt="" />
         </div>
         <div class="tab"><img src="favicon.svg" alt="" />Root &amp; Rise Constructions</div>
       </div>
