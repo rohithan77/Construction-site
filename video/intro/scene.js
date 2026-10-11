@@ -626,6 +626,64 @@ const dustMat = new THREE.PointsMaterial({ map: glowTex, color: hdr("#ffd9b0", 1
 const dust = new THREE.Points(dustGeo, dustMat);
 scene.add(dust);
 
+/* ───────────────────────── sustainability: site study, breeze, solar, water ───────────────────────── */
+const windMat = lineMat(hdr("#cfe0b6", 1.9), 1.8, { dashed: true, dashSize: 0.9, gapSize: 0.55, opacity: 0 });
+const windLines = [-11, -6, -1, 4, 9, 13].map((z0, i) => {
+  const pts = Array.from({ length: 40 }, (_, k) => {
+    const x = -17 + (k / 39) * 34;
+    return V(x, 0.5 + Math.sin(k * 0.35 + i) * 0.12, z0 + Math.sin(x * 0.18 + i * 1.3) * 1.1 - x * 0.12);
+  });
+  const l = drawLine(pts, windMat, 0.2); scene.add(l); return l;
+});
+const treeRingMat = lineMat(hdr("#cfe0b6", 2.0), 1.8, { dashed: true, dashSize: 0.35, gapSize: 0.25, opacity: 0 });
+const treeRings = TREES.map(([x, z, s]) => {
+  const r = 1.3 + s * 0.6;
+  const l = drawLine(Array.from({ length: 49 }, (_, k) => V(x + Math.cos((k / 48) * Math.PI * 2) * r, 0.04, z + Math.sin((k / 48) * Math.PI * 2) * r)), treeRingMat, 0.1);
+  scene.add(l); return l;
+});
+const treeDotMat = new THREE.MeshBasicMaterial({ color: hdr("#cfe0b6", 2.4), transparent: true, opacity: 0 });
+const treeDots = TREES.map(([x, z]) => { const m = new THREE.Mesh(new THREE.CircleGeometry(0.28, 20), treeDotMat); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.05, z); scene.add(m); return m; });
+// breeze through the upper floor (ch5)
+const breezeMat = lineMat(hdr("#cfe0b6", 2.2), 2.0, { dashed: true, dashSize: 0.6, gapSize: 0.4, opacity: 0 });
+const breezeLines = [-0.2, 1.0, 2.2].map((z0, i) => {
+  const pts = Array.from({ length: 40 }, (_, k) => { const x = -13 + (k / 39) * 26; return V(x, 5.1 + Math.sin(k * 0.4 + i) * 0.15, z0 + Math.sin(x * 0.25 + i) * 0.35); });
+  const l = drawLine(pts, breezeMat, 0.2); scene.add(l); return l;
+});
+// solar array on the roof
+const solarMat = new THREE.MeshStandardMaterial({ color: 0x1d2633, roughness: 0.25, metalness: 0.6, envMapIntensity: 1.4 });
+const solarFrame = new THREE.MeshStandardMaterial({ color: 0xb9b4ab, roughness: 0.5, metalness: 0.5 });
+const solar = [];
+{
+  let i = 0;
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 6; col++) {
+    const g = new THREE.Group();
+    const frame = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.06, 1.15), solarFrame);
+    const cell = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.07, 1.05), solarMat);
+    cell.position.y = 0.01; frame.castShadow = true;
+    g.add(frame, cell);
+    // faint cell grid
+    const grid = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0, 1, 1), new THREE.MeshBasicMaterial({ color: 0x5b7aa0, transparent: true, opacity: 0.18, wireframe: true }));
+    grid.rotation.x = -Math.PI / 2; grid.position.y = 0.05; g.add(grid);
+    g.position.set(-4.6 + col * 1.9, 7.6, -2.8 + row * 1.5);
+    g.rotation.x = 0.35; // faces north, toward the sun
+    g.userData.t0 = 46.6 + i * 0.05; g.scale.setScalar(0.0001); g.visible = false;
+    scene.add(g); solar.push(g); i++;
+  }
+}
+// rainwater tank beside the house
+const tankMat = new THREE.MeshStandardMaterial({ color: 0x9aa58a, roughness: 0.6, metalness: 0.2 });
+const tank = new THREE.Group();
+{
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 2.3, 32, 8), tankMat); body.position.y = 1.15; body.castShadow = body.receiveShadow = true;
+  for (let k = 0; k < 7; k++) { const rib = new THREE.Mesh(new THREE.TorusGeometry(0.86, 0.025, 6, 40), tankMat); rib.rotation.x = Math.PI / 2; rib.position.y = 0.3 + k * 0.3; tank.add(rib); }
+  const lid = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.88, 0.08, 32), tankMat); lid.position.y = 2.33;
+  const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4.6, 8), frameMat); pipe.position.set(-0.75, 4.6, 0);
+  const elbow = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.9, 8), frameMat); elbow.rotation.z = Math.PI / 2; elbow.position.set(-0.4, 2.35, 0);
+  tank.add(body, lid, pipe, elbow);
+}
+tank.position.set(8.6, 0, -1.6); tank.scale.setScalar(0.0001); tank.visible = false;
+scene.add(tank);
+
 /* ───────────────────────── post ───────────────────────── */
 const Q = new URLSearchParams(location.search);
 const rt = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: Number(Q.get("samples") ?? 4) });
@@ -702,7 +760,7 @@ const CAM = [
   [33.0, [-15, 25, 19], [0, 3.0, 1], 35],
   [36.0, [-1, 33, 13], [0.5, 3.0, 1.5], 36],
   [42.5, [5, 32, 14], [0.5, 3.0, 1.5], 36],
-  [45.5, [23, 9, 15], [0, 3.0, 0], 34],
+  [46.5, [21, 14.5, 17], [0, 3.6, 0], 34],
   [51.0, [17, 4.6, 21], [0, 3.2, 1], 34],
   [54.5, [10, 2.4, 19.5], [0, 3.4, 1], 33],
   [58.5, [5, 2.8, 23], [0, 3.6, 1], 30],
@@ -721,13 +779,13 @@ function camU(t) {
 
 /* ───────────────────────── captions & callouts (DOM) ───────────────────────── */
 const CAPTIONS = [
-  { t0: 1.2, t1: 6.6, pos: "bl", ch: ["01", "The Idea"], lines: ["Every home begins", "as an <em>idea.</em>"] },
-  { t0: 8.2, t1: 14.0, pos: "bl", ch: ["02", "The Land"], lines: ["A piece of land.", "A <em>vision</em> waiting to take shape."] },
-  { t0: 15.6, t1: 23.0, pos: "bl", ch: ["03", "The Roots"], lines: ["We begin where no one looks —", "<em>beneath the surface.</em>"], sub: "Soil studied. Footings engineered. Foundations poured to carry generations." },
-  { t0: 24.4, t1: 32.8, pos: "bl", ch: ["04", "The Rise"], lines: ["Then we give it <em>structure</em> —", "a form you can see before it stands."] },
-  { t0: 34.2, t1: 42.8, pos: "tl", ch: ["05", "The Light"], lines: ["We read the land.", "We follow the <em>sun.</em>"], sub: "Where the light falls. Where the windows open. Where the stair turns. Nothing is placed by accident." },
-  { t0: 44.6, t1: 51.8, pos: "bl", ch: ["06", "The Life"], lines: ["Built from the inside out —", "<em>around the way you live.</em>"], sub: "Every room customised to your needs, your rhythm, your land." },
-  { t0: 53.0, t1: 58.6, pos: "bl", ch: ["07", "The Sanctuary"], lines: ["More than a building.", "A <em>sanctuary</em> — yours, every hour of every day."] },
+  { t0: 1.2, t1: 6.6, pos: "bl", ch: ["01", "The Dream"], lines: ["Every home begins", "as a <em>dream.</em>"] },
+  { t0: 8.2, t1: 14.0, pos: "bl", ch: ["02", "The Land"], lines: ["First, we listen to the land —", "its <em>sun,</em> its winds, its trees."] },
+  { t0: 15.6, t1: 23.0, pos: "bl", ch: ["03", "The Roots"], lines: ["We build beneath the surface,", "<em>alongside the roots</em> already here."], sub: "Foundations shaped around the soil and the trees, so both can stand for generations." },
+  { t0: 24.4, t1: 32.8, pos: "bl", ch: ["04", "The Rise"], lines: ["A structure shaped by", "<em>what this place needs.</em>"] },
+  { t0: 34.2, t1: 42.8, pos: "tl", ch: ["05", "The Light"], lines: ["We follow the <em>sun</em>", "before placing a single window."], sub: "Daylight deep inside. Shade when it's warm. Breezes that keep the home cool and fresh." },
+  { t0: 44.6, t1: 51.8, pos: "bl", ch: ["06", "The Life"], lines: ["Built to live <em>with nature,</em>", "around the way you live."], sub: "Sunlight on the roof, rain gathered for the garden, green all around." },
+  { t0: 53.0, t1: 58.6, pos: "bl", ch: ["07", "The Sanctuary"], lines: ["A home that cares for you,", "and for <em>the land</em> it stands on."] },
 ];
 const capRoot = document.getElementById("captions");
 CAPTIONS.forEach((c) => {
@@ -766,10 +824,12 @@ function updateCaptions(t) {
 }
 
 const CALLOUTS = [
-  { t0: 36.6, t1: 42.6, at: V(-2.7, 3.9, 6.3), title: "North-facing living", text: "Winter sun pours in; deep eaves shade the summer.", side: "right" },
-  { t0: 37.6, t1: 42.6, at: V(3.85, 3.9, -1.05), title: "The stair as a spine", text: "Central, daylit, connecting every room you'll use.", side: "right" },
-  { t0: 38.6, t1: 42.6, at: V(7.4, 3.9, 1.0), title: "Windows for cross-breeze", text: "Placed so the house breathes, east to west." },
-  { t0: 39.6, t1: 42.6, at: V(15.5, 0.3, 8.5), title: "Roots that stay", text: "Existing trees protected; the garden designed in, not added on." },
+  { t0: 36.6, t1: 42.6, at: V(-2.7, 3.9, 6.3), title: "Sun-led living", text: "Winter sun warms the rooms; deep eaves shade the summer." },
+  { t0: 37.6, t1: 42.6, at: V(3.85, 3.9, -1.05), title: "A light-filled stair", text: "Daylight carried deep into the heart of the home." },
+  { t0: 38.6, t1: 42.6, at: V(7.4, 3.9, 1.0), title: "Natural cross-breeze", text: "Windows placed so the home breathes and cools itself." },
+  { t0: 39.6, t1: 42.6, at: V(15.5, 0.3, 8.5), title: "Trees kept and cared for", text: "Shade, shelter, and roots that hold the soil together." },
+  { t0: 46.9, t1: 49.9, at: V(2.2, 7.7, 0.2), title: "Sunlight on the roof", text: "Solar energy for everyday living." },
+  { t0: 48.6, t1: 51.7, at: V(8.6, 1.6, -1.6), title: "Rain, gathered", text: "Stored to water the garden and serve the home." },
 ];
 const callRoot = document.getElementById("callouts");
 CALLOUTS.forEach((c) => {
@@ -978,6 +1038,18 @@ function update(t) {
   const lawn = easeInOut(range(t, 43.4, 47.0));
   grassMat.opacity = lawn; rimMat.opacity = lawn; grass.visible = rim.visible = lawn > 0;
   drive.material.opacity = easeInOut(range(t, 45.4, 46.6)); drive.visible = drive.material.opacity > 0;
+
+  /* sustainability layers */
+  const siteStudy = env(t, 9.0, 10.6, 21.5, 23.5);
+  windMat.opacity = 0.85 * siteStudy; windMat.dashOffset = -t * 1.6;
+  windLines.forEach((l, i) => l.setProgress(easeInOut(range(t, 9.2 + i * 0.18, 11.4 + i * 0.18))));
+  treeRingMat.opacity = siteStudy; treeDotMat.opacity = siteStudy;
+  treeRings.forEach((l, i) => l.setProgress(easeOut(range(t, 10.2 + i * 0.12, 11.2 + i * 0.12))));
+  treeDots.forEach((d, i) => { const k = easeOutBack(range(t, 10.0 + i * 0.12, 10.5 + i * 0.12)); d.scale.setScalar(Math.max(0.0001, k)); d.visible = k > 0 && siteStudy > 0; });
+  breezeMat.opacity = env(t, 37.6, 38.6, 42.2, 43.2) * 0.9; breezeMat.dashOffset = -t * 2.2;
+  breezeLines.forEach((l, i) => l.setProgress(easeInOut(range(t, 37.6 + i * 0.2, 39.2 + i * 0.2))));
+  solar.forEach((g) => { const k = easeOutBack(range(t, g.userData.t0, g.userData.t0 + 0.6)); g.scale.setScalar(Math.max(0.0001, k)); g.visible = k > 0.001; });
+  { const k = easeOutBack(range(t, 47.6, 48.6)); tank.scale.setScalar(Math.max(0.0001, k)); tank.visible = k > 0.001; }
 
   /* dust */
   const pos = dustGeo.attributes.position.array;
