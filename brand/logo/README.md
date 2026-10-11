@@ -1,6 +1,6 @@
 # Root & Rise — logo
 
-`brand-board.png` / `brand-board.html` explain the concept: the mark is a seed made of an
+`brand-board.png` / `brand-board.html` explain the concept: the mark is a
 house in front of a rising sun, roots spreading below the horizon, and a glowing
 leaf-shaped doorway (a lamp lit inside).
 
