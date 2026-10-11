@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="568" viewBox="40 34 120.00 142.00" role="img" aria-label="Root &amp; Rise Constructions">
+  <path d="M64 118 V78 A36 36 0 0 1 136 78 V118" fill="none" stroke="#1C1B19" stroke-width="7"/>
+  <path d="M64 118 V132 A36 36 0 0 0 136 132 V118" fill="none" stroke="#B5694A" stroke-width="2"/>
+  <mask id="rr-light-1" maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200"><rect width="200" height="200" fill="#fff"/><path d="M100 119 V75" stroke="#000" stroke-width="2"/></mask><path d="M100 55 C114.5 72 117.5 99 100 118 C82.5 99 85.5 72 100 55Z" fill="#B5694A" mask="url(#rr-light-1)"/>
+  <path d="M100 118 C109 128 111 142 100 154 C89 142 91 128 100 118Z M100 118 V168" fill="none" stroke="#B5694A" stroke-width="2"/>
+  <path d="M44 118 H156" stroke="#1C1B19" stroke-width="2.5"/>
+</svg>
