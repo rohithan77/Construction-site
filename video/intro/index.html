@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Root &amp; Rise — Intro Film</title>
+<meta name="viewport" content="width=1920, height=1080" />
+<style>
+  @font-face { font-family: "Fraunces"; src: url("fonts/Fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; }
+  @font-face { font-family: "Fraunces"; src: url("fonts/Fraunces-Italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; }
+
+  :root {
+    --bg: #F7F4ED;
+    --surface: #E8E2D6;
+    --ink: #1C1B19;
+    --terracotta: #B5694A;
+    --terracotta-lit: #DE9A78;
+    --sage: #9CA88A;
+    --cream: #F7F4ED;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+  body { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; }
+  canvas#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+
+  /* Legibility scrim behind captions */
+  #scrim {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 0% 100%, rgba(14,12,10,0.72) 0%, rgba(14,12,10,0.32) 40%, rgba(14,12,10,0) 62%);
+  }
+  #scrimTop {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(110% 80% at 0% 0%, rgba(14,12,10,0.6) 0%, rgba(14,12,10,0.2) 40%, rgba(14,12,10,0) 62%);
+  }
+
+  /* Letterbox (≈2.1:1) */
+  .bar { position: absolute; left: 0; right: 0; height: 84px; background: #050505; z-index: 20; }
+  .bar.top { top: 0; } .bar.bottom { bottom: 0; }
+
+  /* Captions */
+  .cap { position: absolute; z-index: 10; color: var(--cream); }
+  .cap.bl { left: 132px; bottom: 150px; max-width: 1180px; }
+  .cap.tl { left: 132px; top: 150px; max-width: 1100px; }
+  .chapter {
+    display: flex; align-items: center; gap: 18px; margin-bottom: 26px;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.42em; text-transform: uppercase;
+    color: rgba(247,244,237,0.72);
+  }
+  .chapter .rule { display: block; height: 1px; width: 56px; background: var(--sage); transform-origin: left center; }
+  .chapter .num { color: var(--terracotta-lit); }
+  .line { display: block; overflow: hidden; padding-bottom: 0.2em; margin-bottom: -0.16em; }
+  .line > span { display: inline-block; will-change: transform; }
+  .head {
+    font-family: "Fraunces", serif; font-weight: 560; font-size: 82px; line-height: 1.02;
+    letter-spacing: -0.025em; font-variation-settings: "opsz" 144;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.35);
+  }
+  .head em { font-style: italic; font-weight: 400; color: var(--terracotta-lit); }
+  .sub {
+    margin-top: 26px; font-size: 24px; line-height: 1.6; font-weight: 400; color: rgba(247,244,237,0.82);
+    max-width: 880px; text-shadow: 0 1px 18px rgba(0,0,0,0.4);
+  }
+
+  /* 3D callouts (plan / light chapter) */
+  .callout { position: absolute; z-index: 9; left: 0; top: 0; color: var(--cream); pointer-events: none; }
+  .callout .dot {
+    position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid var(--terracotta-lit); box-shadow: 0 0 22px rgba(222,154,120,0.9);
+  }
+  .callout .dot::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--terracotta-lit); }
+  .callout .lead { position: absolute; left: 0; top: 0; height: 1px; width: 90px; background: rgba(247,244,237,0.75); transform-origin: left center; }
+  .callout .label {
+    position: absolute; left: 104px; top: -26px; width: 380px;
+    background: rgba(20,18,16,0.62); backdrop-filter: blur(6px);
+    border-left: 2px solid var(--terracotta-lit); padding: 12px 18px 13px;
+  }
+  .callout .label b { display: block; font-family: "Fraunces", serif; font-weight: 600; font-size: 25px; letter-spacing: -0.01em; }
+  .callout .label i { display: block; font-style: normal; font-size: 16.5px; line-height: 1.45; color: rgba(247,244,237,0.78); margin-top: 3px; }
+  .callout.left .lead { transform: scaleX(-1); }
+  .callout.left .label { left: auto; right: 104px; border-left: 0; border-right: 2px solid var(--terracotta-lit); text-align: right; }
+
+  /* End card */
+  #endcard {
+    position: absolute; inset: 0; z-index: 30; background: var(--bg); opacity: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  #endcard .grain {
+    position: absolute; inset: 0; opacity: 0.5;
+    background: radial-gradient(80% 70% at 50% 45%, rgba(255,255,255,0.0) 0%, rgba(181,105,74,0.07) 100%);
+  }
+  #mark { width: 300px; height: 300px; overflow: visible; }
+  #mark .house path, #mark .house rect { stroke: var(--ink); }
+  #mark .roots path { stroke: var(--terracotta); }
+  #mark .ground { stroke: var(--sage); }
+  #wordmark { margin-top: 8px; text-align: center; color: var(--ink); }
+  #wordmark .name {
+    font-family: "Fraunces", serif; font-weight: 900; font-size: 128px; letter-spacing: -0.045em; line-height: 0.95;
+    font-variation-settings: "opsz" 144;
+  }
+  #wordmark .name em { font-style: italic; font-weight: 400; color: var(--terracotta); padding: 0 0.04em; }
+  #wordmark .co {
+    margin-top: 22px; font-size: 19px; font-weight: 600; letter-spacing: 0.72em; text-transform: uppercase;
+    color: #7E8A6C; padding-left: 0.72em;
+  }
+  #wordmark .tag {
+    margin-top: 40px; font-family: "Fraunces", serif; font-style: italic; font-weight: 300; font-size: 36px;
+    color: rgba(28,27,25,0.72); letter-spacing: -0.01em;
+  }
+  #wordmark .tag b { font-weight: 500; color: var(--terracotta); }
+  #wordmark .reveal { overflow: hidden; display: block; padding-bottom: 0.2em; margin-bottom: -0.2em; }
+  #wordmark .reveal > span { display: inline-block; }
+
+  #fade { position: absolute; inset: 0; z-index: 40; background: #000; pointer-events: none; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./node_modules/three/build/three.module.js",
+    "three/addons/": "./node_modules/three/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl" width="1920" height="1080"></canvas>
+  <div id="scrim"></div>
+  <div id="scrimTop"></div>
+  <div id="captions"></div>
+  <div id="callouts"></div>
+
+  <div id="endcard">
+    <div class="grain"></div>
+    <svg id="mark" viewBox="0 0 200 200" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g class="roots" stroke-width="2.6">
+        <path d="M100 118 C100 134 99 146 100 166" />
+        <path d="M100 128 C92 136 82 140 70 152" />
+        <path d="M100 128 C108 136 118 140 130 152" />
+        <path d="M100 140 C94 150 88 158 84 172" />
+        <path d="M100 140 C106 150 112 158 116 172" />
+        <path d="M86 146 C80 150 72 152 62 152" />
+        <path d="M114 146 C120 150 128 152 138 152" />
+      </g>
+      <path class="ground" stroke-width="2.6" d="M34 118 L166 118" />
+      <g class="house" stroke-width="3.2">
+        <path d="M60 118 L60 82 L122 82 L122 118" />
+        <path d="M84 82 L84 56 L148 56 L148 118 L122 118" />
+        <path d="M76 52 L156 52" />
+        <path d="M94 66 L138 66" />
+        <path d="M90 118 L90 98 L104 98 L104 118" />
+      </g>
+    </svg>
+    <div id="wordmark">
+      <div class="name reveal"><span>Root <em>&amp;</em> Rise</span></div>
+      <div class="co reveal"><span>Constructions</span></div>
+      <div class="tag reveal"><span>From the <b>root</b> to the <b>rise</b> — built around you.</span></div>
+    </div>
+  </div>
+
+  <div class="bar top"></div>
+  <div class="bar bottom"></div>
+  <div id="fade"></div>
+</div>
+<script type="module" src="./scene.js"></script>
+</body>
+</html>

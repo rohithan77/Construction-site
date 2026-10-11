@@ -1,0 +1,17 @@
+{
+  "name": "root-and-rise-intro-video",
+  "private": true,
+  "description": "Cinematic 3D intro film for Root & Rise Constructions, rendered frame-by-frame with Three.js + Playwright + ffmpeg.",
+  "type": "module",
+  "scripts": {
+    "preview": "node render.mjs --preview",
+    "render": "node render.mjs",
+    "soundtrack": "python3 soundtrack.py"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1"
+  }
+}
